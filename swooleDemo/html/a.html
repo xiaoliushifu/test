@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+我是webSocket 客户端
+</body>
+<script>
+    let wsUrl = "ws://localhost:9502";
+    let ws = new WebSocket(wsUrl);
+    ws.onopen=(function (evt) {
+        console.log('connected websocket server')
+    })
+
+    ws.onmessage=(function (evt) {
+        console.log("接收到wsServer端数据对象:",evt.data)
+    })
+    ws.onclose = function (evt) {
+        console.log("Connection closed.");
+    };
+</script>
+</html>
