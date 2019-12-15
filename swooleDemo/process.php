@@ -14,6 +14,8 @@
         try {
             //修改进程名（默认情况是 php xxxx.php)
 //            swoole_set_process_name(sprintf('php-ps:%s', 'master'));
+            //用php原生函数修改,但某些平台不支持
+//            cli_set_process_title(sprintf('php-ps:%s', 'master'));
             //当前进程id
             $this->mpid = posix_getpid();
             echo "主进程:".$this->mpid.PHP_EOL;
@@ -42,9 +44,13 @@
         //还没有启动子进程
         $process = new swoole_process(function(swoole_process $worker)use($index){
             echo "I am process {$index}".PHP_EOL;
-            echo "回调函数中，当前进程是:".posix_getpid().PHP_EOL;
+            echo "子进程回调函数中，当前进程是:".posix_getpid().PHP_EOL;
+
+            //修改子进程名称，由于子进程会继承父进程的东西，如果不修改名称，那么正常应该是 php process.php
+            //mac的命令行执行 ps -ef | grep process.php 可以看到
+//            cli_set_process_title(sprintf('php-child-ps:%s', $index));
             //检测父进程是否退出
-            for ($j = 0; $j < 5; $j++) {
+            for ($j = 0; $j < 10; $j++) {
                 //$this->checkMpid($worker);
                 echo "子进程:{$index}-msg: {$j}\n";
                 sleep(1);
