@@ -47,6 +47,9 @@ class AsyMysql
                     var_dump($db->affected_rows, $db->insert_id);
                 }
                 var_dump($r);
+                //如果不关闭，异步mysql客户端对象不销毁，常驻内存
+                //所以swoole的worker进程一直工作
+                //后续异步redis也是
                 $db->close();
             });
         });
