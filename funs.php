@@ -1,5 +1,6 @@
 <?php
 
+
 /**
  * 二保本
  * @param int $p1
@@ -126,13 +127,20 @@ function two($p1=0,$p2=0,$total=100) {
         foreach($var as $k=>$v) {
             echo sprintf("第  $k 种方案：<BR>   $p1 购买：%s注,奖金为： %s<br> $p2 购买：%s注,奖金为： %s<br>$p3 购买：%s注,奖金为： %s<br><br><br>", $num[$k][0],$assign[$k][0],$num[$k][1],$assign[$k][1],$num[$k][2],$assign[$k][2],$num[$k][3],$assign[$k][3]);
         }
-        //博热保本
-        //奖金最高
-
     }
 
 
-    //方差计算
+/**
+ * 方差：初中代数内容，
+ * 描述一组数据的波动性。
+ * 1总和求平均数
+ * 2每个元素和平均数的差距（防止负数具体用差求平方，后续再开方即可）
+ * 3平方求和再取平均数
+ * 4最后开方得到的结果，就是方差
+ * @param $arr
+ * @return array|float
+ * @author: LiuShiFu
+ */
     function variance($arr) {
 
         $length = count($arr);
@@ -148,7 +156,7 @@ function two($p1=0,$p2=0,$total=100) {
         foreach ($arr as $v) {
             $count += pow($average-$v, 2);
         }
-        //方差求平均值
+        //再求平均值
         $variance = $count/$length;
         //结果返回
 //        return array('variance' => $variance, 'square' => sqrt($variance), 'average' => $average);
@@ -157,4 +165,22 @@ function two($p1=0,$p2=0,$total=100) {
         return sqrt($variance);
     }
 
-    two(3.25,1.41,100);
+//    two(3.25,1.41,100);
+
+/**
+ * 一种简易打印数组的方法
+ * @param $arr
+ * @author: LiuShiFu
+ */
+    function printArr($arr) {
+        $str = "";
+        if (count($arr)) {
+            $str  =  "[";
+            foreach ($arr as $item) {
+                $str .= $item.",";
+            }
+            $str = substr($str,0,-1);
+            $str .="]";
+        }
+        echo  $str;
+    }
