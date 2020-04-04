@@ -379,10 +379,12 @@ class SingleLinkedList {
                     break;
                 }
                 //不是末尾节点，需要注意
+                //这是兼容删除末尾节点的，其实
                 $next2 = $temp->next->next;//被删除节点的下一个节点
                 $temp->next = null;//删除节点；
                 $temp->next = $next2;//后续节点继续拼接上
                 break;
+
             }
             //没有找到，继续遍历
             $temp = $temp->next;
@@ -424,10 +426,209 @@ class SingleLinkedList {
     }
 }
 //=================================================== 链表的操作
-$list = new SingleLinkedList();
-$h1 = new HeroNode(1,"松江");
-$h2 = new HeroNode(2,"林冲");
-$h3 = new HeroNode(3,"玉麒麟");
+//$list = new SingleLinkedList();
+//$h1 = new HeroNode(1,"松江");
+//$h2 = new HeroNode(2,"林冲");
+//$h3 = new HeroNode(3,"玉麒麟");
+//
+////添加节点
+//$list->add($h1);
+//$list->add($h2);
+//$list->add($h3);
+//
+////打印下节点
+//$list->show();
+//
+////删除中间节点
+//$list->del($h2);
+//$list->show();
+
+
+/*==========================双向链表=================================================*/
+
+
+/**
+ * 双向链表的node
+ * Class HeroNode2
+ */
+class HeroNode2{
+    /**
+     * 业务字段，编号
+     * @var
+     */
+    public $no;
+
+    /**
+     * 业务字段，名称
+     * @var
+     */
+    public $name;
+
+    /**
+     * 必要的非业务字段：指针
+     * 指向下一个节点的指针
+     * 每个新的节点初始化时都是null
+     * @var
+     */
+    public $next = null;
+
+    /**
+     * 指向前一个节点
+     * @var null
+     */
+    public $pre = null;
+
+    public function __construct($no,$name)
+    {
+        $this->no = $no;
+        $this->name = $name;
+    }
+}
+/**
+ * 单向链表的缺点：
+ *  只能一个方向查找
+ *  不能自己删除自己，需要辅助节点
+ * 双向链表，每个节点增加一个pre指针，可以指向前面的节点
+ * 初始化pre=null;
+ */
+class DoubleLinkedList {
+
+    /**
+     * 头节点（头指针）
+     * 是一个固定的，没有实际业务意义的对象，专门指向链表的第一个节点
+     * @var
+     */
+    public $head;
+
+    /**
+     * 链表初始化时，必有头节点
+     * SingleLinkedList constructor.
+     */
+    public function __construct()
+    {
+        $this->head = new HeroNode2(0,"");
+    }
+
+    /**
+     * 添加节点
+     * 在列表的尾部，添加节点
+     * 其实就是先找到队尾的节点，把新节点链入最后节点即可；
+     *
+     *
+     * @param HeroNode2 $node
+     * @author: LiuShiFu
+     */
+    public function add(HeroNode2 $node) {
+        //从头节点开始
+        $temp = $this->head;
+        while(true) {
+            //当前节点$temp的下一个节点为空，则说明找到最后一个节点了
+            if ($temp->next == null) {
+                break;
+            }
+            $temp = $temp->next;
+        }
+        //头节点head也是对象
+        $temp->next = $node;
+        //新节点的pre指向前一个节点
+        $node->pre = $temp;
+    }
+
+
+    /**
+     * 删除链表的某个节点
+     * 当然是根据普通业务节点的业务，比如编号
+     *
+     * 注意：
+     *  双链表可以完成自己删除自己（单链表时，需要找到被删元素的上一个元素才可以处理）
+     *
+     *  测试：
+     *      删除第一个节点，删除最后一个节点，然后中间的一个节点
+     * @param HeroNode2 $node
+     * @author: LiuShiFu
+     */
+    public function del(HeroNode2 $node)
+    {
+        if ($this->isEmpty()) {
+            echo "链表为空：".PHP_EOL;
+            return;
+        }
+        $flag = false;
+        $temp = $this->head;
+        echo "删除节点：".PHP_EOL;
+        //遍历的条件是，当前节点不为空
+        while($temp != null) {
+            //当前节点的删除条件判断：编号
+            if ($temp->no == $node->no) {
+                $flag = true;
+
+                printf("\t hno=%d,hname=%s".PHP_EOL,$temp->no,$temp->name);
+                //分三种情况吗？
+                //第一个节点
+                //中间一个节点
+                //最后一个节点
+
+                //先考虑中间节点的，然后再测试第一个节点，最后一个节点，看哪个不满足再修改，
+                //尽量使之统一
+
+                //当前节点的后面节点，交给上一个节点的next指针
+                //删除最后一个节点，或者中间节点，下面这一行代码都兼容
+                $temp->pre->next = $temp->next;
+
+                //当后续还有节点时（非末尾节点，则后面肯定有）
+                if ($temp->next != null) {
+                    //后节点的pre指向上一个节点
+                    $temp->next->pre = $temp->pre;
+                }
+                //删除节点的前后指针都置空（这一点很重要，否则发生曾经删除的节点，后续再添加时可能出现节点的情况）
+                $temp->pre = null;
+                $temp->next = null;
+                break;
+            }
+            //没有找到，继续遍历
+            $temp = $temp->next;
+        }
+        //没有找到那个节点，或者成功删除了那个节点
+        if (!$flag) {
+            echo "没有找到该节点：".sprintf("\t hno=%d,hname=%s".PHP_EOL,$node->no,$node->name);
+        }
+    }
+
+    /**
+     * 链表为空的判断
+     * @return bool
+     * @author: LiuShiFu
+     */
+    public function isEmpty() {
+        //只有头节点的情况，链表为空
+        return $this->head->next == null;
+    }
+
+    /**
+     * 打印链表
+     * 遍历节点输出节点数据
+     * @author: LiuShiFu
+     */
+    public function show() {
+
+        if ($this->isEmpty()) {
+            echo "链表为空：".PHP_EOL;
+            return;
+        }
+
+        $temp = $this->head;
+        echo "打印链表：".PHP_EOL;
+        while($temp != null) {
+            printf("\t hno=%d,hname=%s".PHP_EOL,$temp->no,$temp->name);
+            $temp = $temp->next;
+        }
+    }
+}
+//===========================双向链表的操作
+$list = new DoubleLinkedList();
+$h1 = new HeroNode2(1,"松江");
+$h2 = new HeroNode2(2,"林冲");
+$h3 = new HeroNode2(3,"玉麒麟");
 
 //添加节点
 $list->add($h1);
@@ -437,8 +638,12 @@ $list->add($h3);
 //打印下节点
 $list->show();
 
-//删除中间节点
+//删除中间节点,最后节点，第一个节点，看是否报错
+$list->del($h1);
+$list->del($h3);
 $list->del($h2);
 $list->show();
 
 
+$list->add($h3);
+$list->show();
