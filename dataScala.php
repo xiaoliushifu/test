@@ -135,6 +135,7 @@ class arrayQueue
 //}
 
 /* ====================循环队列，环形队列==============================*/
+
 /**
  * 优化版
  * 数组队列基础上增加【取模】运算，使得队列逻辑上是一个环形队列
@@ -268,7 +269,8 @@ class CircleArrayQueue
  * 数据类型：定义一种数据结构及围绕这一数据结构可以进行的操作（增删改查）
  * Class HeroNode
  */
-class HeroNode{
+class HeroNode
+{
     /**
      * 业务字段，编号
      * @var
@@ -289,7 +291,7 @@ class HeroNode{
      */
     public $next = null;
 
-    public function __construct($no,$name)
+    public function __construct($no, $name)
     {
         $this->no = $no;
         $this->name = $name;
@@ -299,7 +301,8 @@ class HeroNode{
 /**
  * 定义一个单链表及允许的操作
  */
-class SingleLinkedList {
+class SingleLinkedList
+{
 
     /**
      * 头节点（头指针）
@@ -314,7 +317,7 @@ class SingleLinkedList {
      */
     public function __construct()
     {
-        $this->head = new HeroNode(0,"");
+        $this->head = new HeroNode(0, "");
     }
 
     /**
@@ -329,10 +332,11 @@ class SingleLinkedList {
      * @param HeroNode $node
      * @author: LiuShiFu
      */
-    public function add(HeroNode $node) {
+    public function add(HeroNode $node)
+    {
         //从头节点开始
         $temp = $this->head;
-        while(true) {
+        while (true) {
             //当前节点$temp的下一个节点为空，则说明找到最后一个节点了
             if ($temp->next == null) {
                 break;
@@ -361,20 +365,20 @@ class SingleLinkedList {
     public function del(HeroNode $node)
     {
         if ($this->isEmpty()) {
-            echo "链表为空：".PHP_EOL;
+            echo "链表为空：" . PHP_EOL;
             return;
         }
         $flag = false;
         $temp = $this->head;
-        echo "删除节点：".PHP_EOL;
+        echo "删除节点：" . PHP_EOL;
         //遍历的条件是，下一个节点不为空
-        while($temp->next != null) {
+        while ($temp->next != null) {
             //下一个节点的删除条件判断：编号
             if ($temp->next->no == $node->no) {
                 $flag = true;
                 //恰好是末尾的节点
                 if ($temp->next->next == null) {
-                    printf("\t hno=%d,hname=%s".PHP_EOL,$temp->next->no,$temp->next->name);
+                    printf("\t hno=%d,hname=%s" . PHP_EOL, $temp->next->no, $temp->next->name);
                     $temp->next = null;//删除，不要用unset
                     break;
                 }
@@ -391,7 +395,7 @@ class SingleLinkedList {
         }
         //没有找到那个节点，或者成功删除了那个节点
         if (!$flag) {
-            echo "没有找到该节点：".sprintf("\t hno=%d,hname=%s".PHP_EOL,$node->no,$node->name);
+            echo "没有找到该节点：" . sprintf("\t hno=%d,hname=%s" . PHP_EOL, $node->no, $node->name);
         }
     }
 
@@ -400,7 +404,8 @@ class SingleLinkedList {
      * @return bool
      * @author: LiuShiFu
      */
-    public function isEmpty() {
+    public function isEmpty()
+    {
         //只有头节点的情况，链表为空
         return $this->head->next == null;
     }
@@ -410,21 +415,23 @@ class SingleLinkedList {
      * 遍历节点输出节点数据
      * @author: LiuShiFu
      */
-    public function show() {
+    public function show()
+    {
 
         if ($this->isEmpty()) {
-            echo "链表为空：".PHP_EOL;
+            echo "链表为空：" . PHP_EOL;
             return;
         }
 
         $temp = $this->head;
-        echo "打印链表：".PHP_EOL;
-        while($temp != null) {
-            printf("\t hno=%d,hname=%s".PHP_EOL,$temp->no,$temp->name);
+        echo "打印链表：" . PHP_EOL;
+        while ($temp != null) {
+            printf("\t hno=%d,hname=%s" . PHP_EOL, $temp->no, $temp->name);
             $temp = $temp->next;
         }
     }
 }
+
 //=================================================== 链表的操作
 //$list = new SingleLinkedList();
 //$h1 = new HeroNode(1,"松江");
@@ -451,7 +458,8 @@ class SingleLinkedList {
  * 双向链表的node
  * Class HeroNode2
  */
-class HeroNode2{
+class HeroNode2
+{
     /**
      * 业务字段，编号
      * @var
@@ -478,12 +486,13 @@ class HeroNode2{
      */
     public $pre = null;
 
-    public function __construct($no,$name)
+    public function __construct($no, $name)
     {
         $this->no = $no;
         $this->name = $name;
     }
 }
+
 /**
  * 单向链表的缺点：
  *  只能一个方向查找
@@ -491,7 +500,8 @@ class HeroNode2{
  * 双向链表，每个节点增加一个pre指针，可以指向前面的节点
  * 初始化pre=null;
  */
-class DoubleLinkedList {
+class DoubleLinkedList
+{
 
     /**
      * 头节点（头指针）
@@ -506,7 +516,7 @@ class DoubleLinkedList {
      */
     public function __construct()
     {
-        $this->head = new HeroNode2(0,"");
+        $this->head = new HeroNode2(0, "");
     }
 
     /**
@@ -518,10 +528,11 @@ class DoubleLinkedList {
      * @param HeroNode2 $node
      * @author: LiuShiFu
      */
-    public function add(HeroNode2 $node) {
+    public function add(HeroNode2 $node)
+    {
         //从头节点开始
         $temp = $this->head;
-        while(true) {
+        while (true) {
             //当前节点$temp的下一个节点为空，则说明找到最后一个节点了
             if ($temp->next == null) {
                 break;
@@ -550,19 +561,19 @@ class DoubleLinkedList {
     public function del(HeroNode2 $node)
     {
         if ($this->isEmpty()) {
-            echo "链表为空：".PHP_EOL;
+            echo "链表为空：" . PHP_EOL;
             return;
         }
         $flag = false;
         $temp = $this->head;
-        echo "删除节点：".PHP_EOL;
+        echo "删除节点：" . PHP_EOL;
         //遍历的条件是，当前节点不为空
-        while($temp != null) {
+        while ($temp != null) {
             //当前节点的删除条件判断：编号
             if ($temp->no == $node->no) {
                 $flag = true;
 
-                printf("\t hno=%d,hname=%s".PHP_EOL,$temp->no,$temp->name);
+                printf("\t hno=%d,hname=%s" . PHP_EOL, $temp->no, $temp->name);
                 //分三种情况吗？
                 //第一个节点
                 //中间一个节点
@@ -590,7 +601,7 @@ class DoubleLinkedList {
         }
         //没有找到那个节点，或者成功删除了那个节点
         if (!$flag) {
-            echo "没有找到该节点：".sprintf("\t hno=%d,hname=%s".PHP_EOL,$node->no,$node->name);
+            echo "没有找到该节点：" . sprintf("\t hno=%d,hname=%s" . PHP_EOL, $node->no, $node->name);
         }
     }
 
@@ -599,7 +610,8 @@ class DoubleLinkedList {
      * @return bool
      * @author: LiuShiFu
      */
-    public function isEmpty() {
+    public function isEmpty()
+    {
         //只有头节点的情况，链表为空
         return $this->head->next == null;
     }
@@ -609,41 +621,182 @@ class DoubleLinkedList {
      * 遍历节点输出节点数据
      * @author: LiuShiFu
      */
-    public function show() {
+    public function show()
+    {
 
         if ($this->isEmpty()) {
-            echo "链表为空：".PHP_EOL;
+            echo "链表为空：" . PHP_EOL;
             return;
         }
 
         $temp = $this->head;
-        echo "打印链表：".PHP_EOL;
-        while($temp != null) {
-            printf("\t hno=%d,hname=%s".PHP_EOL,$temp->no,$temp->name);
+        echo "打印链表：" . PHP_EOL;
+        while ($temp != null) {
+            printf("\t hno=%d,hname=%s" . PHP_EOL, $temp->no, $temp->name);
             $temp = $temp->next;
         }
     }
 }
+
 //===========================双向链表的操作
-$list = new DoubleLinkedList();
-$h1 = new HeroNode2(1,"松江");
-$h2 = new HeroNode2(2,"林冲");
-$h3 = new HeroNode2(3,"玉麒麟");
+//$list = new DoubleLinkedList();
+//$h1 = new HeroNode2(1,"松江");
+//$h2 = new HeroNode2(2,"林冲");
+//$h3 = new HeroNode2(3,"玉麒麟");
+//
+////添加节点
+//$list->add($h1);
+//$list->add($h2);
+//$list->add($h3);
+//
+////打印下节点
+//$list->show();
+//
+////删除中间节点,最后节点，第一个节点，看是否报错
+//$list->del($h1);
+//$list->del($h3);
+//$list->del($h2);
+//$list->show();
+//
+//
+//$list->add($h3);
+//$list->show();
 
-//添加节点
-$list->add($h1);
-$list->add($h2);
-$list->add($h3);
 
-//打印下节点
-$list->show();
+/*==============================走迷宫的路径==============================*/
 
-//删除中间节点,最后节点，第一个节点，看是否报错
-$list->del($h1);
-$list->del($h3);
-$list->del($h2);
-$list->show();
+/**
+ *
+ * 其实是一个递归算法
+ *
+ * 用二维数组实现
+ *  约定：  0：可以走但是尚未走的路；    1：墙，挡板等不通的路；     2：走过的路；     3：已走过，但是不通的路；
+ * 给出走出的路径
+ * 给出最短的路径（多种策略尝试后）
+ * 1给个起始位置
+ * 2    一种策略：
+ *          1：下-》右-》上-》左
+ *      第二种策略：
+ *          2：右-》下-》左-》上
+ */
+class MapWay
+{
+    //地图
+    public $map = [];
 
+    public $xLen = 0;
+    public $yLen = 0;
 
-$list->add($h3);
-$list->show();
+    public function __construct(int $x, int $y)
+    {
+        $this->xLen = $x;
+        $this->yLen = $y;
+    }
+
+    /**
+     * 绘制地图（迷宫）
+     * 正方形，四面都是墙，其他地方有挡板
+     * @author: LiuShiFu
+     */
+    public function map()
+    {
+        //初始化全是0
+        for ($i = 0; $i < $this->xLen; $i++) {
+            for ($j = 0; $j < $this->yLen; $j++) {
+                $this->map[$i][$j] = 0;
+            }
+        }
+        //上下都是1
+        for ($i = 0; $i < $this->xLen; $i++) {
+            $this->map[0][$i] = 1;
+            $this->map[$this->yLen - 1][$i] = 1;
+        }
+        //左右都是1
+        for ($i = 0; $i < $this->xLen; $i++) {
+            $this->map[$i][0] = 1;
+            $this->map[$i][$this->yLen - 1] = 1;
+        }
+
+        //挡板
+        $this->map[3][1] = 1;
+        $this->map[3][2] = 1;
+    }
+
+    /**
+     * 打印地图
+     * @author: LiuShiFu
+     */
+    public function showMap()
+    {
+        foreach ($this->map as $xItem) {
+            foreach ($xItem as $yItem) {
+                printf("%d ", $yItem);
+            }
+            print(PHP_EOL);
+        }
+    }
+
+    /**
+     * 开始走迷宫,策略1
+     *
+     * 不断递归
+     *
+     * 判断是否走到出口了，比如（6，6）是出口；
+     * @param int $x  起始位置
+     * @param int $y    起始位置
+     * @return bool
+     * @author: LiuShiFu
+     */
+    public function setWay(int $x, int $y): bool
+    {
+        //越界，或者墙，走不通
+        if ($x >= $this->xLen || $y >= $this->yLen || $this->map[$x][$y] == 1) {
+            //print("越界了");
+            return false;
+        }
+
+        //走到了迷宫的出口,则认为成功，此时退出即可（否则还会走直到走不通为止）
+        if ($this->map[5][5] == 2) {
+            return true;
+        }
+
+        //走过的路
+        if ($this->map[$x][$y] == 2) {
+            return true;
+        } else {
+            //没走过的路,首先假设可以走，然后开始策略（尝试下一步是否可以走通）
+            if ($this->map[$x][$y] == 0) {
+                $this->map[$x][$y] = 2;
+
+                //开始策略
+                if ($this->setWay($x + 1, $y)) {  //继续往下走-------》下
+                    return true;
+                } elseif ($this->setWay($x, $y + 1)) {  //继续往右走-------》右
+                    return true;
+                } elseif ($this->setWay($x - 1, $y)) {  //继续往上走-------》上
+                    return true;
+                } elseif ($this->setWay($x, $y - 1)) {  //继续往左走-------》左
+                    return true;
+                } else {
+                    //都没有走通，则假设失败，把它重新标记为死路
+                    $this->map[$x][$y] = 3;
+                    return false;
+                }
+            } else {
+                //3的情况，走不通
+                return false;
+            }
+        }
+    }
+}
+
+//===========================地图的操作
+$miGong = new MapWay(7,7);
+$miGong->map();
+$miGong->showMap();
+
+//起始位置，开始走
+$miGong->setWay(1, 1);
+echo PHP_EOL;
+//最后显示路径，重点关注为2的
+$miGong->showMap();
