@@ -385,17 +385,12 @@ function insertSort(array $a) {
             //基准数小，那么右移开始
             if ($value < $a[$j]) {
                 $a[$j+1] = $a[$j];
-                //是否比较到最后一个数了
-                if ($j == 0) {
-                    $a[$j] = $value;
-                }
             } else {
-                //否则直接插入
-                $a[$j+1] = $value;
-                //一旦插入，说明成功归位，退出这一趟比较
                 break;
             }
         }
+        //循环结束，则说明找到了插入的位置
+        $a[$j+1] = $value;
     }
     return $a;
 }
