@@ -698,7 +698,7 @@ class MapWay
      * 正方形，四面都是墙，其他地方有挡板
      * @author: LiuShiFu
      */
-    public function map()
+    public function drawMap()
     {
         //初始化全是0
         for ($i = 0; $i < $this->xLen; $i++) {
@@ -720,6 +720,10 @@ class MapWay
         //挡板
         $this->map[3][1] = 1;
         $this->map[3][2] = 1;
+
+        //增加挡板难度，测试【3不通路】
+        $this->map[1][2] = 1;
+        $this->map[2][2] = 1;
     }
 
     /**
@@ -750,18 +754,20 @@ class MapWay
     public function setWay(int $x, int $y): bool
     {
         //越界，或者墙，走不通
-        if ($x >= $this->xLen || $y >= $this->yLen || $this->map[$x][$y] == 1) {
-            //print("越界了");
-            return false;
-        }
+        //修改了对【走过的路】的return false之后，其实这段代码也可以注释掉了：因为不可能越界了
+//        if ($x >= $this->xLen || $y >= $this->yLen || $this->map[$x][$y] == 1) {
+//            //print("越界了");
+//            return false;
+//        }
+
+
+            //这一行代码，影响了回溯（3），在策略尝试【上】的时候，有bug,不不会出现3
+//        if ($this->map[$x][$y] == 2) {
+//            return true;
+//        }
 
         //走到了迷宫的出口,则认为成功，此时退出即可（否则还会走直到走不通为止）
         if ($this->map[5][5] == 2) {
-            return true;
-        }
-
-        //走过的路
-        if ($this->map[$x][$y] == 2) {
             return true;
         } else {
             //没走过的路,首先假设可以走，然后开始策略（尝试下一步是否可以走通）
@@ -778,12 +784,13 @@ class MapWay
                 } elseif ($this->setWay($x, $y - 1)) {  //继续往左走-------》左
                     return true;
                 } else {
-                    //都没有走通，则假设失败，把它重新标记为死路
+                    //都没有走通，则假设失败，把它重新标记为死路，这就是回溯，重点。好好想想这种思路！
                     $this->map[$x][$y] = 3;
                     return false;
                 }
             } else {
-                //3的情况，走不通
+                //不是0的情况，那么就只有：1墙 2走过的路（或者假设的路） 3不通的路 三种情况
+                //怕越界，走过的路，统统在这里可以统一返回false处理，思路新理解
                 return false;
             }
         }
@@ -792,7 +799,7 @@ class MapWay
 
 //===========================地图的操作
 $miGong = new MapWay(7,7);
-$miGong->map();
+$miGong->drawMap();
 $miGong->showMap();
 
 //起始位置，开始走
