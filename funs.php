@@ -271,10 +271,25 @@ function mathZhiShu2(int $n): array
 
 /**
  * 选择排序
+ * 每一轮的比较，都能归位一个数，都能把手上的基准数确定放到哪个位置；
  *
  * 比一开始的想法有改进：
  *  发现比手上的牌更小时，并不立即交换，而只是标记下，直到最后这一轮比较完，只需交换一次即可；
  *  多用了两个变量，减少了中间交换的次数，使得每一轮最多交换一次；
+ *
+ *
+ * 时间复杂度：
+ *  两层循环：所以应该是O(m x n)系列（m指的是外层循环次数，n是内层循环次数）
+ *  再进一步想想，外层m是[0,n);跟n成线性相关；
+ *  而内层循环跟外层$j有关：
+ *  当$j=0时，内层为n;    $j=1,内层为n-1;    $j=2,内层为n-2;
+ *  所以，加起来： n+(n-1)+(n-2)+....+1 = (1+n)n/2;    其实是数学公式的考察；
+ *  O((1+n)n/2) = O(n平方）
+ *  虽然【选择排序】和【冒泡排序】在一个数量级上，但是我们也要知道，【选择排序】还是比【冒泡】略快
+ *  在含有百万元素的数组中排序，还是能差个20秒以上的（mac上）
+ * 10000个（0，80000）的数组： 【冒泡】平均30秒；【选择】平均11秒；【快速】一秒不到！
+ *
+ *
  * @param array $arr
  * @return array
  * @author: LiuShiFu
@@ -296,10 +311,21 @@ function selectSort(array $arr): array
             }
         }
         //这一轮下来如果下标发生了变化,则说明中间发生了重置，此时交换就行
+        //一个小小的优化：不交换，而改为互置
         if ($j != $key) {
-            $arr[$j] = $arr[$j] ^ $arr[$key];
-            $arr[$key] = $arr[$j] ^ $arr[$key];
-            $arr[$j] = $arr[$j] ^ $arr[$key];
+            //重置式，三者中最快的，有微小的快
+            $arr[$key] = $arr[$j];
+            $arr[$j] = $value;    //重置最小值
+
+            //纯交换式，最慢
+//            $tmp = $arr[$j];
+//            $arr[$j] = $arr[$key];
+//             $arr[$key] = $tmp;
+
+            //位交换式 感觉比纯交换式略快，但是测试时多了两个11秒
+//            $arr[$j] = $arr[$j] ^ $arr[$key];
+//            $arr[$key] = $arr[$j] ^ $arr[$key];
+//            $arr[$j] = $arr[$j] ^ $arr[$key];
         }
     }
     return $arr;
@@ -373,3 +399,59 @@ function insertSort(array $a) {
     }
     return $a;
 }
+
+/**
+ * 快速排序
+ * 这种递归写法，全程没有发生数据交换。只是不断的递归拆分。
+ * 所以，尽量减少【交换】操作，是提高效率的一种方法
+ * 快速排序，名称上来看，称得上【快速】！
+ * @param array $arr
+ * @return array
+ * @author: LiuShiFu
+ */
+function quikSort(array $arr) {
+    //特殊情况只有一个或者空数组，直接返回即可
+    if(($length = count($arr)) < 2) {
+        return $arr;
+    }
+    //默认第一个为基准数
+    $base_num = $arr[0];
+    //初始化左范围，右边范围
+    $left_array = $right_array = [];
+
+    //遍历开始分发
+    $i=1;
+    while($i < $length){
+        //比基准数小的放入左边
+        if ($base_num > $arr[$i]) {
+            $left_array[] = $arr[$i];
+        } else {
+            $right_array[] = $arr[$i];
+        }
+        $i++;
+    }
+    //同理，左右范围依次做同样的处理（再取基准数分发）
+    $left_array = quikSort($left_array);
+    $right_array = quikSort($right_array);
+    //最后就是它了
+    return array_merge($left_array,[$base_num],$right_array);
+}
+
+//=========================测试排序
+$arr = range(0,9999);
+//$arr =[];
+for($i=0;$i<10000;$i++) {
+//    $arr[$i] = mt_rand(0,80000);
+    $mt = mt_rand(0,80000);
+    while(in_array($mt,$arr)) {
+        $mt = mt_rand(0,80000);
+    }
+    $arr[$i] = $mt;
+}
+echo "排序前:".date("H:i:s").PHP_EOL;
+//$arr = BubbleSort($arr);      //差不多30秒
+$arr = selectSort($arr);      //平均10秒  交换式【10，10，10，10，11】 重置式【10，10，10，10，10】 位交换式【11，11,10,10,11】
+//$arr = insertSort($arr);        //平均10秒
+//$arr = quikSort($arr);    //最快，不到1秒
+//printArr($arr);
+echo "排序后:".date("H:i:s").PHP_EOL;
