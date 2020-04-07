@@ -459,12 +459,19 @@ function mergeSort(array &$arr,int $left,int $right,array $tmp)
         $mid = intdiv($left + $right,2);
 //        echo "1-left:".$left."-------mid:".$mid."-----right:".$right.PHP_EOL;
         //对左边来说，传入了$mid,相当于$right减小了，递归结束的条件在逼近
+        //这个递归结束的时候，就是左边的子序列已经排好了
+        //随着递归的加深直到拆分出最左边的两个元素为左右子序列，各自一个元素。才算拆分到尽头，也就是原始序列的整个左边拆分结束。
+        //这时最左边的两个子序列(各自只有一个元素）首先开始排序合并(肯定是$arr[0],$arr[1])
+        //如果原始序列是奇数，那么还会和$arr[2]合并；如果原始序列是偶数，那么左边就结束了，就该右边的$arr[2],$arr[3]了
         mergeSort($arr,$left,$mid,$tmp);
 //        echo "2-left:".$left."-------mid:".$mid."-----right:".$right.PHP_EOL;
         //left再增加，递归的条件
         //注意+1，否则死循环
+        //这个右子序列递归结束的时候，就是右子序列已经排好了
+        //同理，随着递归的加深直到把【$mid+1,$right】范围拆分成最左边为两个元素时，
+        //【$mid+1,$right】范围也算递归到尽头了
         mergeSort($arr,$mid+1,$right,$tmp);
-        //合并的操作
+        //把各自排好的两个子序列，用两两比较的方式进行合并为一个大序列（
         merge($arr,$left,$mid,$right,$tmp);
     }
 //    echo "break-"."left:".$left."-----right:".$right.PHP_EOL;
