@@ -404,7 +404,8 @@ function insertSort(array $a) {
  * @return array
  * @author: LiuShiFu
  */
-function quikSort(array $arr) {
+function quikSort(array $arr)
+{
     //特殊情况只有一个或者空数组，直接返回即可
     if(($length = count($arr)) < 2) {
         return $arr;
@@ -432,20 +433,112 @@ function quikSort(array $arr) {
     return array_merge($left_array,[$base_num],$right_array);
 }
 
+/**
+ * 归并排序
+ *
+ * 分为两个步骤：
+ *  递归地拆分，
+ *      拆分到最小块时开始合并
+ *
+ * 从打印的日志来看，最小就是拆分为一个元素
+ * 拆分时候的时间复杂度，既然除2的，就是logN;
+ * 合并时候的复杂度就是O(n)
+ *  平均时间复杂度O（NlgN)为啥是乘法？
+ *
+ *
+ *
+ * @param array $arr
+ * @param int $left
+ * @param int $right
+ * @param array $tmp
+ * @author: LiuShiFu
+ */
+function mergeSort(array &$arr,int $left,int $right,array $tmp)
+{
+    if ($left < $right) {
+        $mid = intdiv($left + $right,2);
+//        echo "1-left:".$left."-------mid:".$mid."-----right:".$right.PHP_EOL;
+        //对左边来说，传入了$mid,相当于$right减小了，递归结束的条件在逼近
+        mergeSort($arr,$left,$mid,$tmp);
+//        echo "2-left:".$left."-------mid:".$mid."-----right:".$right.PHP_EOL;
+        //left再增加，递归的条件
+        //注意+1，否则死循环
+        mergeSort($arr,$mid+1,$right,$tmp);
+        //合并的操作
+        merge($arr,$left,$mid,$right,$tmp);
+    }
+//    echo "break-"."left:".$left."-----right:".$right.PHP_EOL;
+}
+
+/**
+ *
+ * 两块数组，总共有多少元素就需要移动多少次
+ * 时间复杂度就是元素个数O(n)
+ * @param $arr
+ * @param $left
+ * @param $mid
+ * @param $right
+ * @param $tmp
+ * @author: LiuShiFu
+ */
+function merge(&$arr,$left,$mid,$right,$tmp)
+{
+//    echo "进入merge的-left:".$left."-------mid:".$mid."-----right:".$right.PHP_EOL;
+    $i = $left;//左起始位
+    $j = $mid+1;//右起始位
+    $t = 0;
+    //两个数组同时对比移动到$tmp，一旦跳出循环说明至少有一个数组全部移完
+    while($i <= $mid && $j <= $right) {
+        //左边数组的当前元素小，放到$tmp中，$t下标移动一位
+        if ($arr[$i] <= $arr[$j]) {
+            $tmp[$t]= $arr[$i];
+            $t++;
+            $i++;
+        } else {
+            $tmp[$t]= $arr[$j];
+            $t++;
+            $j++;//右边下标移动一位
+        }
+    }
+    //把剩下的数组，全部拷贝到$tmp
+    //左边可能剩下
+    while($i <= $mid) {
+        $tmp[$t]= $arr[$i];
+        $t++;
+        $i++;
+    }
+
+    //右边可能剩下
+    while($j <= $right) {
+        $tmp[$t]= $arr[$j];
+        $t++;
+        $j++;
+    }
+
+    //整体再把tmp拷贝回到$arr,注意下标
+    $tmpLeft = $left;
+    $t=0;
+    while($tmpLeft <= $right) {
+        $arr[$tmpLeft++] = $tmp[$t++];
+    }
+}
+
+
 //=========================测试排序
-$arr = range(0,9999);
+$arr = $temp = array_fill(0,4,0);
 //$arr =[];
-for($i=0;$i<10000;$i++) {
+for($i=0;$i<3;$i++) {
 //    $arr[$i] = mt_rand(0,80000);
-    $mt = mt_rand(0,80000);
+    $mt = mt_rand(0,100);
     while(in_array($mt,$arr)) {
-        $mt = mt_rand(0,80000);
+        $mt = mt_rand(0,100);
     }
     $arr[$i] = $mt;
 }
 echo "排序前:".date("H:i:s").PHP_EOL;
 //$arr = BubbleSort($arr);      //差不多30秒
-$arr = selectSort($arr);      //平均10秒  交换式【10，10，10，10，11】 重置式【10，10，10，10，10】 位交换式【11，11,10,10,11】
+mergeSort($arr,0,count($arr)-1,$temp);      //平均10秒  交换式【10，10，10，10，11】 重置式【10，10，10，10，10】 位交换式【11，11,10,10,11】
+//$arr = selectSort($arr);      //平均10秒  交换式【10，10，10，10，11】 重置式【10，10，10，10，10】 位交换式【11，11,10,10,11】
 //$arr = insertSort($arr);        //平均10秒
 //$arr = quikSort($arr);    //最快，不到1秒
 //printArr($arr);
