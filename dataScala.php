@@ -701,11 +701,7 @@ class MapWay
     public function drawMap()
     {
         //初始化全是0
-        for ($i = 0; $i < $this->xLen; $i++) {
-            for ($j = 0; $j < $this->yLen; $j++) {
-                $this->map[$i][$j] = 0;
-            }
-        }
+        $this->map = array_fill(0, 7, array_fill(0, 7, 0));
         //上下都是1
         for ($i = 0; $i < $this->xLen; $i++) {
             $this->map[0][$i] = 1;
