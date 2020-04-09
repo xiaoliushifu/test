@@ -3,7 +3,8 @@
 // 数组模拟队列
 //队尾入，对头出；
 
-include ("./funs.php");
+include("./funs.php");
+
 class arrayQueue
 {
 
@@ -743,8 +744,8 @@ class MapWay
      * 不断递归
      *
      * 判断是否走到出口了，比如（6，6）是出口；
-     * @param int $x  起始位置
-     * @param int $y    起始位置
+     * @param int $x 起始位置
+     * @param int $y 起始位置
      * @return bool
      * @author: LiuShiFu
      */
@@ -758,7 +759,7 @@ class MapWay
 //        }
 
 
-            //这一行代码，影响了回溯（3），在策略尝试【上】的时候，有bug,不不会出现3
+        //这一行代码，影响了回溯（3），在策略尝试【上】的时候，有bug,不不会出现3
 //        if ($this->map[$x][$y] == 2) {
 //            return true;
 //        }
@@ -819,30 +820,84 @@ class MapWay
  * @return bool
  * @author: LiuShiFu
  */
-function BinarySearch($arr,$left,$right,$findVal)
+function BinarySearch($arr, $left, $right, $findVal)
 {
     if ($left > $right) {
         return false;
     }
     //取中间值
-    $midIndex = intdiv($left+$right,2);
+    $midIndex = intdiv($left + $right, 2);
     $midVal = $arr[$midIndex];
 
     //比较
     if ($midVal < $findVal) {
-        $midIndex = BinarySearch($arr,$midIndex+1,$right,$findVal);
+        $midIndex = BinarySearch($arr, $midIndex + 1, $right, $findVal);
     } elseif ($midVal > $findVal) {
-        $midIndex = BinarySearch($arr,$left,$midIndex-1,$findVal);
+        $midIndex = BinarySearch($arr, $left, $midIndex - 1, $findVal);
     }
     return $midIndex;
 }
+
+/**
+ * 二分查找，改进版
+ * 如果有序列表出现多个相同的值，则如果恰好找这样的值时把所有的下标都返回
+ * 意思就是返回数组了
+ * 未找到返回 []；找到则返回装有索引的数组
+ * @param $arr
+ * @param $left
+ * @param $right
+ * @param $findVal
+ * @return bool
+ * @author: LiuShiFu
+ */
+function BinarySearch2($arr, $left, $right, $findVal)
+{
+    if ($left > $right) {
+        return [];
+    }
+    //取中间值
+    $midIndex = intdiv($left + $right, 2);
+    $midVal = $arr[$midIndex];
+
+    //比较
+    if ($midVal < $findVal) {
+        return  BinarySearch2($arr, $midIndex + 1, $right, $findVal);
+    } elseif ($midVal > $findVal) {
+        return  BinarySearch2($arr, $left, $midIndex - 1, $findVal);
+    }
+    //走到这说明找到了，因为是有序列表，所以相同的值一定是挨着的
+    //分别往左往右直到下标结束或者不再是$findVal就说明结束了
+    //先把找到的$midIndex加进去
+    $indexArr = [$midIndex];
+    //右边走
+    $tmpIndex = ($midIndex + 1);
+    while (true) {
+        if ($tmpIndex == count($arr) || $arr[$tmpIndex] != $findVal) {
+            break;
+        }
+        $indexArr[] = $tmpIndex;
+        $tmpIndex++;
+    }
+    //左边走
+    $tmpIndex = ($midIndex - 1);
+    while (true) {
+        if ($tmpIndex == -1 || $arr[$tmpIndex] != $findVal) {
+            break;
+        }
+        $indexArr[] = $tmpIndex;
+        $tmpIndex--;
+    }
+    return $indexArr;
+}
+
 //=========================================二分查找测试
-$arr = range(4,8);
+//$arr = range(4,8);
+$arr = [3, 3,4, 5, 5, 5, 6, 9, 10,10];
 printArr($arr);
 echo PHP_EOL;
-$n = BinarySearch($arr,0,4,52);
-if ($n === false ) {
-    echo "no found".PHP_EOL;
-} else  {
-    echo "found,$n".PHP_EOL;
+$n = BinarySearch2($arr, 0, count($arr)-1, 3);
+if (!$n) {
+    echo "no found" . PHP_EOL;
+} else {
+    printArr($n);
 }
