@@ -3,6 +3,7 @@
 // 数组模拟队列
 //队尾入，对头出；
 
+include ("./funs.php");
 class arrayQueue
 {
 
@@ -793,13 +794,55 @@ class MapWay
     }
 }
 
-//===========================地图的操作
-$miGong = new MapWay(7,7);
-$miGong->drawMap();
-$miGong->showMap();
 
-//起始位置，开始走
-$miGong->setWay(1, 1);
+//===========================地图的操作
+//$miGong = new MapWay(7,7);
+//$miGong->drawMap();
+//$miGong->showMap();
+//
+////起始位置，开始走
+//$miGong->setWay(1, 1);
+//echo PHP_EOL;
+////最后显示路径，重点关注为2的
+//$miGong->showMap();
+
+
+/*========================查找===========================================================*/
+
+/**
+ * 二分查找，前提是一个有序列表
+ * false 未找到，也有返回-1；找到则返回索引
+ * @param $arr
+ * @param $left
+ * @param $right
+ * @param $findVal
+ * @return bool
+ * @author: LiuShiFu
+ */
+function BinarySearch($arr,$left,$right,$findVal)
+{
+    if ($left > $right) {
+        return false;
+    }
+    //取中间值
+    $midIndex = intdiv($left+$right,2);
+    $midVal = $arr[$midIndex];
+
+    //比较
+    if ($midVal < $findVal) {
+        $midIndex = BinarySearch($arr,$midIndex+1,$right,$findVal);
+    } elseif ($midVal > $findVal) {
+        $midIndex = BinarySearch($arr,$left,$midIndex-1,$findVal);
+    }
+    return $midIndex;
+}
+//=========================================二分查找测试
+$arr = range(4,8);
+printArr($arr);
 echo PHP_EOL;
-//最后显示路径，重点关注为2的
-$miGong->showMap();
+$n = BinarySearch($arr,0,4,52);
+if ($n === false ) {
+    echo "no found".PHP_EOL;
+} else  {
+    echo "found,$n".PHP_EOL;
+}
