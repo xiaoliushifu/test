@@ -3,7 +3,7 @@
 // 数组模拟队列
 //队尾入，对头出；
 
-include("./funs.php");
+//include("./funs.php");
 
 class arrayQueue
 {
@@ -982,6 +982,32 @@ class TreeNode
         //输出中间节点
         printf("no=%s,name=%s\t".PHP_EOL, $this->no, $this->name);
     }
+
+    /**
+     * 前序查找
+     * 先比较中间节点，再比较左子树，比较右子树
+     * @param int $no
+     * @return TreeNode
+     * @author: LiuShiFu
+     */
+    public function preOrderSearch(int $no)
+    {
+        //中间节点是否是目标号码
+        if ($this->no == $no) {
+            return $this;
+        }
+        //左子树
+        if ($this->left) {
+            $return = $this->left->preOrderSearch($no);
+            //左边没有，就再去右子树找
+            if(!$return) {
+                if ($this->right) {
+                    return $this->right->preOrderSearch($no);
+                }
+            }
+            return $return;
+        }
+    }
 }
 
 /**
@@ -1001,7 +1027,6 @@ class BinaryTree
 {
     //跟节点
     public $root = null;
-
     /**
      * 构造方法里，主动构造一个二叉树
      * BinaryTree constructor.
@@ -1064,10 +1089,31 @@ class BinaryTree
         }
     }
 
+    /**
+     * 二叉树的前序查找
+     * @param int $no
+     * @author: LiuShiFu
+     */
+    public function preOrderSearch(int $no)
+    {
+        if ($this->root) {
+            $returnNode = $this->root->preOrderSearch($no);
+            if ($returnNode) {
+                printf("找到了，n=%d,name=%s",$returnNode->no,$returnNode->name);
+                exit;
+            }
+            printf("没有找到～".PHP_EOL);
+        } else
+            {
+            printf("空二叉树，不能查找");
+        }
+    }
 }
 
 //======================二叉树的遍历操作
 $binTree = new BinaryTree();
 //$binTree->preOrder();     //前序，就是中左右的顺序遍历节点
-$binTree->infixOrder();   //中序，就是左中右的顺序遍历
+//$binTree->infixOrder();   //中序，就是左中右的顺序遍历
 //$binTree->postOrder();      //后序，就是左右中的顺序遍历
+
+$binTree->preOrderSearch(5);    //前序查找
