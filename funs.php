@@ -412,25 +412,83 @@ function quikSort(array $arr)
     }
     //默认第一个为基准数
     $base_num = $arr[0];
-    //初始化左范围，右边范围
+    //初始化左序列空间，右序列空间
     $left_array = $right_array = [];
 
-    //遍历开始分发
+    //遍历拆分为两个子序列
     $i=1;
     while($i < $length){
         //比基准数小的放入左边
         if ($base_num > $arr[$i]) {
             $left_array[] = $arr[$i];
         } else {
+            //放入右边的序列
             $right_array[] = $arr[$i];
         }
         $i++;
     }
-    //同理，左右范围依次做同样的处理（再取基准数分发）
+    //同理，左右子序列依次做同样的处理（这里就是递归了）
     $left_array = quikSort($left_array);
     $right_array = quikSort($right_array);
     //最后就是它了
     return array_merge($left_array,[$base_num],$right_array);
+}
+
+/**
+ * 第二种快速排序
+ * 关键就是拆分子序列方式的不同
+ *
+ * @param array $arr
+ * @param int $left
+ * @param int $right
+ * @return void 因为使用了引用，$arr就是排好序的了，无需返回
+ * @author: LiuShiFu
+ */
+function quikSort2(array &$arr,int $left,int $right):void
+{
+    if($left < $right){
+        //一次排序，把参考元放到了最终的位置
+        $p = partition($arr,$left,$right);
+        quikSort2($arr,$left,$p-1);
+        quikSort2($arr,$p+1,$right);
+    }
+}
+
+/**
+ * 第二种快速排序使用到的
+ * 根据参考元把原序列交换为两个部分
+ * 左边序列小于参考元，右边序列大于参考元
+ * 返回参考元在序列中的索引
+ * @param $arr
+ * @param $left
+ * @param $right
+ * @return int
+ * @author: LiuShiFu
+ */
+function partition(array &$arr,int $left,int $right):int
+{
+    //参考元
+    $v = $arr[$right];
+    //序列之外，-1
+    $i = $left -1;
+    //把小于参考元的，移动到i的位置
+    for ($j=$left;$j<$right;$j++) {
+        //直接在原序列上交换，小于参考元的，j和i就交换；
+        //j和i都在参考元的左边
+        if ($arr[$j] < $v) {
+            $i++;
+            $t = $arr[$j];
+            $arr[$j] = $arr[$i];
+            $arr[$i] = $t;
+        }
+    }
+    //最后再交换一次，把参考元放到i的右边一位(其实就是上面if中的代码）
+    $i++;
+    //不是用交换方法了，而是用重置方式
+    $arr[$right] = $arr[$i];
+    $arr[$i] = $v;
+    //自此$i就确定了它在原数组中最终的位置，它左边都比它小；右边的都比参考元大；
+    return $i;
 }
 
 /**
@@ -532,21 +590,23 @@ function merge(&$arr,$left,$mid,$right,$tmp)
 
 
 //=========================测试排序
-$arr = $temp = array_fill(0,4,0);
+$n=3;
+$arr = $temp = array_fill(0,$n,0);
 //$arr =[];
-for($i=0;$i<3;$i++) {
+for($i=0;$i<$n;$i++) {
 //    $arr[$i] = mt_rand(0,80000);
-    $mt = mt_rand(0,100);
+    $mt = mt_rand(0,80000000);
     while(in_array($mt,$arr)) {
-        $mt = mt_rand(0,100);
+        $mt = mt_rand(0,8000000);
     }
     $arr[$i] = $mt;
 }
 echo "排序前:".date("H:i:s").PHP_EOL;
 //$arr = BubbleSort($arr);      //差不多30秒
-mergeSort($arr,0,count($arr)-1,$temp);      //平均10秒  交换式【10，10，10，10，11】 重置式【10，10，10，10，10】 位交换式【11，11,10,10,11】
+//mergeSort($arr,0,count($arr)-1,$temp);      //平均10秒  交换式【10，10，10，10，11】 重置式【10，10，10，10，10】 位交换式【11，11,10,10,11】
 //$arr = selectSort($arr);      //平均10秒  交换式【10，10，10，10，11】 重置式【10，10，10，10，10】 位交换式【11，11,10,10,11】
 //$arr = insertSort($arr);        //平均10秒
 //$arr = quikSort($arr);    //最快，不到1秒
-//printArr($arr);
+quikSort2($arr,0,count($arr)-1);    //最快，不到1秒
+printArr($arr);
 echo "排序后:".date("H:i:s").PHP_EOL;
