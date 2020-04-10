@@ -1008,6 +1008,43 @@ class TreeNode
             return $return;
         }
     }
+
+    /**
+     * 节点的删除
+     *  约定：
+     *      当是叶子节点时，直接删除该节点；
+     *      当非叶子节点时，直接删除该树；
+     *      不支持根节点删除
+     * @param int $no
+     * @author: LiuShiFu
+     */
+    public function  delNode(int $no)
+    {
+        //当前节点的左子节点
+        if ($this->left) {
+            if ($this->left->no == $no) {
+                $this->left = null;
+                return;
+            }
+        }
+
+        //右子节点
+        if ($this->right) {
+            if ($this->right->no == $no) {
+                $this->right = null;
+                return;
+            }
+        }
+
+        //既然上述左右孩子节点都不是，那么开始左递归
+        if ($this->left) {
+            $this->left->delNode($no);
+        }
+        //右递归
+        if ($this->right) {
+            $this->right->delNode($no);
+        }
+    }
 }
 
 /**
@@ -1108,6 +1145,22 @@ class BinaryTree
             printf("空二叉树，不能查找");
         }
     }
+
+    /**
+     * 节点删除
+     *
+     *  根节点的删除，特例在这里处理
+     * @param int $no
+     * @author: LiuShiFu
+     */
+    public function delNode(int $no)
+    {
+        if ($this->root) {
+            $this->root->delNode($no);
+        } else {
+            printf("空二叉树，不能删除");
+        }
+    }
 }
 
 //======================二叉树的遍历操作
@@ -1116,4 +1169,7 @@ $binTree = new BinaryTree();
 //$binTree->infixOrder();   //中序，就是左中右的顺序遍历
 //$binTree->postOrder();      //后序，就是左右中的顺序遍历
 
-$binTree->preOrderSearch(5);    //前序查找
+//$binTree->preOrderSearch(5);    //前序查找
+$binTree->delNode(3);    //删除节点
+printf("删除后".PHP_EOL);
+$binTree->preOrder();     //前序，就是中左右的顺序遍历节点
