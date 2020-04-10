@@ -861,9 +861,9 @@ function BinarySearch2($arr, $left, $right, $findVal)
 
     //比较
     if ($midVal < $findVal) {
-        return  BinarySearch2($arr, $midIndex + 1, $right, $findVal);
+        return BinarySearch2($arr, $midIndex + 1, $right, $findVal);
     } elseif ($midVal > $findVal) {
-        return  BinarySearch2($arr, $left, $midIndex - 1, $findVal);
+        return BinarySearch2($arr, $left, $midIndex - 1, $findVal);
     }
     //走到这说明找到了，因为是有序列表，所以相同的值一定是挨着的
     //分别往左往右直到下标结束或者不再是$findVal就说明结束了
@@ -892,12 +892,182 @@ function BinarySearch2($arr, $left, $right, $findVal)
 
 //=========================================二分查找测试
 //$arr = range(4,8);
-$arr = [3, 3,4, 5, 5, 5, 6, 9, 10,10];
-printArr($arr);
-echo PHP_EOL;
-$n = BinarySearch2($arr, 0, count($arr)-1, 3);
-if (!$n) {
-    echo "no found" . PHP_EOL;
-} else {
-    printArr($n);
+//$arr = [3, 3,4, 5, 5, 5, 6, 9, 10,10];
+//printArr($arr);
+//echo PHP_EOL;
+//$n = BinarySearch2($arr, 0, count($arr)-1, 3);
+//if (!$n) {
+//    echo "no found" . PHP_EOL;
+//} else {
+//    printArr($n);
+//}
+
+/*=============================二叉树===============================*/
+
+/**
+ * 二叉树的节点
+ *
+ * 每个节点的遍历
+ * Class TreeNode
+ */
+class TreeNode
+{
+    public $no;
+    public $name;
+    //左右节点
+    public $left = null;
+    public $right = null;
+
+    public function __construct(int $no, string $name)
+    {
+        $this->no = $no;
+        $this->name = $name;
+    }
+
+    /**
+     * 前序遍历,递归
+     * @author: LiuShiFu
+     */
+    public function preOrder()
+    {
+        //先输出中间节点
+        printf("no=%s,name=%s\t".PHP_EOL, $this->no, $this->name);
+
+        //再去左子树递归
+        if ($this->left) {
+            $this->left->preOrder();
+        }
+
+        //再去右子树递归
+        if ($this->right) {
+            $this->right->preOrder();
+        }
+
+    }
+
+    /**
+     * 中序遍历
+     * @author: LiuShiFu
+     */
+    public function infixOrder()
+    {
+        //左子树递归
+        if ($this->left) {
+            $this->left->infixOrder();
+        }
+
+        //输出中间节点
+        printf("no=%s,name=%s\t".PHP_EOL, $this->no, $this->name);
+
+        //再去右子树递归
+        if ($this->right) {
+            $this->right->infixOrder();
+        }
+    }
+
+    /**
+     * 后序遍历
+     * @author: LiuShiFu
+     */
+    public function postOrder()
+    {
+        //左子树递归
+        if ($this->left) {
+            $this->left->postOrder();
+        }
+        //再去右子树递归
+        if ($this->right) {
+            $this->right->postOrder();
+        }
+        //输出中间节点
+        printf("no=%s,name=%s\t".PHP_EOL, $this->no, $this->name);
+    }
 }
+
+/**
+ * 二叉树
+ * 其实就是一个关键节点：跟节点
+ * 应有的方法：
+ *      构造二叉树
+ *      删除二叉树
+ *      增加节点
+ *      删除节点
+ *      查找节点
+ *      。。。。。。
+ *
+ * Class BinaryTree
+ */
+class BinaryTree
+{
+    //跟节点
+    public $root = null;
+
+    /**
+     * 构造方法里，主动构造一个二叉树
+     * BinaryTree constructor.
+     */
+    public function __construct()
+    {
+        //跟节点
+        $this->root = $tmp = new TreeNode(1, "宋江");
+
+        //其他节点
+        $node2 = new TreeNode(2, "无用");
+        $node3 = new TreeNode(3, "卢俊义");
+        $node4 = new TreeNode(4, "林冲");
+        $node5 = new TreeNode(5, "关胜");
+
+        //节点之间建立关系
+        $tmp->left = $node2;
+        $tmp->right = $node3;
+
+        $node3->left = $node5;
+        $node3->right = $node4;
+    }
+
+    /**
+     * 二叉树的前序遍历
+     * @author: LiuShiFu
+     */
+    public function preOrder()
+    {
+        if ($this->root) {
+            $this->root->preOrder();
+        } else {
+            printf("空二叉树，不能遍历");
+        }
+    }
+
+    /**
+     * 二叉树的中序遍历
+     * @author: LiuShiFu
+     */
+    public function infixOrder()
+    {
+        if ($this->root) {
+            $this->root->infixOrder();
+        } else {
+            printf("空二叉树，不能遍历");
+        }
+    }
+
+    /**
+     * 二叉树的后序遍历
+     * @author: LiuShiFu
+     */
+    public function postOrder()
+    {
+        if ($this->root) {
+            $this->root->postOrder();
+        } else {
+            printf("空二叉树，不能遍历");
+        }
+    }
+
+}
+
+//======================二叉树的遍历操作
+$binTree = new BinaryTree();
+//$binTree->preOrder();     //前序，就是中左右的顺序遍历节点
+$binTree->infixOrder();   //中序，就是左中右的顺序遍历
+//$binTree->postOrder();      //后序，就是左右中的顺序遍历
