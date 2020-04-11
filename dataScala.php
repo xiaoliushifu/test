@@ -1149,13 +1149,18 @@ class BinaryTree
     /**
      * 节点删除
      *
-     *  根节点的删除，特例在这里处理
+     *  根节点的删除要特别处理：在这里完成而不是在节点对象中完成
      * @param int $no
      * @author: LiuShiFu
      */
     public function delNode(int $no)
     {
         if ($this->root) {
+            //跟节点的删除
+            if ($this->root->no == $no) {
+                $this->root = null;
+                return;
+            }
             $this->root->delNode($no);
         } else {
             printf("空二叉树，不能删除");
@@ -1170,6 +1175,6 @@ $binTree = new BinaryTree();
 //$binTree->postOrder();      //后序，就是左右中的顺序遍历
 
 //$binTree->preOrderSearch(5);    //前序查找
-$binTree->delNode(3);    //删除节点
+$binTree->delNode(1);    //删除节点
 printf("删除后".PHP_EOL);
 $binTree->preOrder();     //前序，就是中左右的顺序遍历节点
