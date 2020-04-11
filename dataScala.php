@@ -1049,6 +1049,39 @@ class TreeNode
             $this->right->delNode($no);
         }
     }
+
+    /**
+     * 创建二叉排序树（添加节点）
+     * 根据节点的值大小，决定放置的位置：
+     *  比当前值小的，往左递归；
+     *  比当前值大的，往右递归
+     * @param TreeNode $node
+     * @author: LiuShiFu
+     */
+    public function addSearchNode(TreeNode $node)
+    {
+        if ($node) {
+            //插入节点的值，小于当前节点的值
+           if ($node->no < $this->no) {
+               //当前节点无左子节点
+               if (!$this->left) {
+                   $this->left = $node;
+               } else {
+                   //当前节点有左子节点，递归
+                   $this->left->addSearchNode($node);
+               }
+           } else {
+               //插入节点的值，大于等于当前节点的值
+               //当前节点无右子节点
+               if (!$this->right) {
+                   $this->right = $node;
+               } else {
+                   //当前节点有右子节点，递归
+                   $this->right->addSearchNode($node);
+               }
+           }
+        }
+    }
 }
 
 /**
@@ -1068,11 +1101,13 @@ class BinaryTree
 {
     //跟节点
     public $root = null;
+
     /**
-     * 构造方法里，主动构造一个二叉树
+     * 主动构造一个二叉树
+     * 用于测试
      * BinaryTree constructor.
      */
-    public function __construct()
+    public function createSimpleTree()
     {
         //跟节点
         $this->root = $tmp = new TreeNode(1, "宋江");
@@ -1090,6 +1125,7 @@ class BinaryTree
         $node3->left = $node5;
         $node3->right = $node4;
     }
+
 
     /**
      * 二叉树的前序遍历
@@ -1170,15 +1206,43 @@ class BinaryTree
             printf("空二叉树，不能删除");
         }
     }
+
+    /**
+     * 二叉排序树的添加节点方法
+     * @param TreeNode $node
+     * @author: LiuShiFu
+     */
+    public function addSearchNode(TreeNode $node)
+    {
+        if (!$this->root) {
+           $this->root = $node;
+           return;
+        }else {
+            //调用节点的方法处理
+            $this->root->addSearchNode($node);
+        }
+
+    }
 }
 
 //======================二叉树的遍历操作
 $binTree = new BinaryTree();
+//$binTree->createSimpleTree();
+////$binTree->preOrder();     //前序，就是中左右的顺序遍历节点
+////$binTree->infixOrder();   //中序，就是左中右的顺序遍历
+////$binTree->postOrder();      //后序，就是左右中的顺序遍历
+//
+////$binTree->preOrderSearch(5);    //前序查找
+//$binTree->delNode(1);    //删除节点
+//printf("删除后".PHP_EOL);
 //$binTree->preOrder();     //前序，就是中左右的顺序遍历节点
-//$binTree->infixOrder();   //中序，就是左中右的顺序遍历
-//$binTree->postOrder();      //后序，就是左右中的顺序遍历
 
-//$binTree->preOrderSearch(5);    //前序查找
-$binTree->delNode(1);    //删除节点
-printf("删除后".PHP_EOL);
-$binTree->preOrder();     //前序，就是中左右的顺序遍历节点
+//二叉排序树的操作
+//从一个数组表示的二叉树，创建为二叉排序树
+//线性存储转化为直观二叉树的方式
+$arr = [7,3,10,12,5,1,9];
+foreach($arr as $item) {
+    $binTree->addSearchNode(new TreeNode($item,"xxx"));
+}
+//中序遍历[二叉排序树】，应该是递增的结果就对了
+$binTree->infixOrder();
