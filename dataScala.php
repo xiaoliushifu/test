@@ -1010,6 +1010,61 @@ class TreeNode
     }
 
     /**
+     * 二叉排序树方法
+     * 根据参数节点的值查找节点
+     * 影响二叉排序树的删除
+     * 比当前节点值小的，就往左递归；
+     * 比当前节点值大的，就往右递归；
+     * @param int $no
+     * @return TreeNode
+     * @author: LiuShiFu
+     */
+    public function searchSortValue(int $no)
+    {
+        if ( $no == $this->no) {
+            return $this;
+            //比当前值小，
+        } elseif ($no < $this->no) {
+            if ($this->left) {
+                return $this->left->searchSortValue($no);
+            }
+        } elseif ($no > $this->no) {
+            //比当前值大
+            if ($this->right) {
+                return $this->right->searchSortValue($no);
+            }
+        }
+    }
+
+    /**
+     * 二叉排序树方法
+     * 根据参数节点的值，找到参数节点的父节点
+     * 这个有点难度
+     *  由于链表的单向性，还是老办法，需要从父节点的角度来寻找：
+     *      如果left或者right匹配成功，就返回this；
+     *      否则,比this的值小，则应该去左子树递归；比当前this值大，则去右子树递归；
+     *      特别，如果恰好this就是no的节点，那么这个this应该只能是根节点了。此时没有父节点
+     * @param int $no
+     * @return TreeNode
+     * @author: LiuShiFu
+     */
+    public function searchParent(int $no):TreeNode
+    {
+        if (($this->left && $this->left->no == $no)  || ($this->right && $this->right->no == $no)) {
+            return $this;
+        }
+
+        //左边递归
+        if ($this->left && $no < $this->no ) {
+            return $this->left->searchParent($no);
+        }
+        //右边递归
+        if ($this->right && $no > $this->no ) {
+            return $this->right->searchParent($no);
+        }
+    }
+
+    /**
      * 节点的删除
      *  约定：
      *      当是叶子节点时，直接删除该节点；
@@ -1093,6 +1148,7 @@ class TreeNode
  *      增加节点
  *      删除节点
  *      查找节点
+ *      查找父节点
  *      。。。。。。
  *
  * Class BinaryTree
@@ -1221,8 +1277,86 @@ class BinaryTree
             //调用节点的方法处理
             $this->root->addSearchNode($node);
         }
-
     }
+
+    /**
+     * 二叉排序树的方法
+     * 根据参数值的查找，调用节点的方法即可
+     * @param $no
+     * @return TreeNode
+     * @author: LiuShiFu
+     */
+    public function searchSortNode($no):TreeNode
+    {
+        if (!$this->root) {
+            return null;
+        } else {
+            //调用节点的方法处理
+            return $this->root->searchSortValue($no);
+        }
+    }
+
+    /**
+     * 二叉排序树的方法
+     * 根据参数值查找父节点，调用节点的方法即可
+     * @param $no
+     * @return TreeNode
+     * @author: LiuShiFu
+     */
+    public function searchParentNode($no):TreeNode
+    {
+        if (!$this->root) {
+            return null;
+        } else {
+            //调用节点的方法处理
+            return $this->root->searchParent($no);
+        }
+    }
+
+    /**
+     * 二叉排序树的方法
+     *      删除节点，由简到难
+     *          1删除叶子节点
+     *          2非叶子节点
+     * @param $no
+     * @return bool
+     * @author: LiuShiFu
+     */
+    public function delSortNode($no):bool
+    {
+        //空树
+        if (!$this->root) {
+            return false;
+        }
+        //先找到该节点
+        $targetNode = $this->searchSortNode($no);
+        //没有该节点
+        if (!$targetNode) {
+            return false;
+        }
+        //找到父节点
+        $parentNode = $this->searchParentNode($no);
+
+        //1 叶子节点的情况
+        if ($targetNode->left == null && $targetNode->right == null ) {
+            //父节点存在的情况下
+            if ($parentNode) {
+                //目标节点是父节点的右子节点
+                if ($parentNode->right && $parentNode->right->no == $no) {
+                    $parentNode->right = null;
+                    return true;
+                } else {
+                    //否则左子节点
+                    $parentNode->left = null;
+                    return true;
+                }
+            }
+        }
+        return false;
+        //2 非叶子节点
+    }
+
+
 }
 
 //======================二叉树的遍历操作
@@ -1240,9 +1374,17 @@ $binTree = new BinaryTree();
 //二叉排序树的操作
 //从一个数组表示的二叉树，创建为二叉排序树
 //线性存储转化为直观二叉树的方式
-$arr = [7,3,10,12,5,1,9];
+$arr = [7,3,10,12,5,1,9,2];
 foreach($arr as $item) {
     $binTree->addSearchNode(new TreeNode($item,"xxx"));
 }
 //中序遍历[二叉排序树】，应该是递增的结果就对了
+$binTree->infixOrder();
+$ret = $binTree->delSortNode(2);
+$ret = $binTree->delSortNode(5);
+$ret = $binTree->delSortNode(9);
+//$ret = $binTree->delSortNode(12);
+$ret = $binTree->delSortNode(10);
+printf("删除后".PHP_EOL);
+var_dump($ret);
 $binTree->infixOrder();
