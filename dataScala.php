@@ -1317,7 +1317,9 @@ class BinaryTree
      * 二叉排序树的方法
      *      删除节点，由简到难
      *          1删除叶子节点
-     *          2非叶子节点
+     *          2非叶子节点，再分两种情况
+     *                  1 只有一个子节点的情况
+     *                  2 有两个子节点的情况
      * @param $no
      * @return bool
      * @author: LiuShiFu
@@ -1351,6 +1353,37 @@ class BinaryTree
                     return true;
                 }
             }
+            //有两个子节点的情况
+        } elseif ($targetNode->left != null && $targetNode->right != null ) {
+            printf("含有两个子节点的情况".PHP_EOL);
+            return false;
+
+        } else {
+            //$targetNode只有一个子节点的情况，则把它的子节点上调一层
+            printf("含有一个子节点的情况".PHP_EOL);
+            //判断$targetNode是父节点的左右，还有$targetNode的子节点的左右
+                //$targetNode是父节点的左节点
+            if ($parentNode->left && $parentNode->left->no == $targetNode->no) {
+                //$targetNode的子节点是左孩子节点
+                if ($targetNode->left) {//左左
+                    //左子节点上调一层
+                    $parentNode->left = $targetNode->left;
+                } else {//左右
+                    //右子节点上调一层
+                    $parentNode->left = $targetNode->right;
+                }
+                //$targetNode是父节点的右节点
+            } elseif ($parentNode->right && $parentNode->right->no == $targetNode->no) {
+                //$targetNode的子节点是左孩子节点
+                if ($targetNode->left) {//右左
+                    //左子节点上调一层
+                    $parentNode->right = $targetNode->left;
+                } else {//右右
+                    //右子节点上调一层
+                    $parentNode->right = $targetNode->right;
+                }
+            }
+
         }
         return false;
         //2 非叶子节点
@@ -1380,11 +1413,7 @@ foreach($arr as $item) {
 }
 //中序遍历[二叉排序树】，应该是递增的结果就对了
 $binTree->infixOrder();
-$ret = $binTree->delSortNode(2);
-$ret = $binTree->delSortNode(5);
-$ret = $binTree->delSortNode(9);
-//$ret = $binTree->delSortNode(12);
-$ret = $binTree->delSortNode(10);
+$ret = $binTree->delSortNode(1);
 printf("删除后".PHP_EOL);
 var_dump($ret);
 $binTree->infixOrder();
