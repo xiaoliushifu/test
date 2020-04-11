@@ -1048,7 +1048,7 @@ class TreeNode
      * @return TreeNode
      * @author: LiuShiFu
      */
-    public function searchParent(int $no):TreeNode
+    public function searchParent(int $no): ?TreeNode
     {
         if (($this->left && $this->left->no == $no)  || ($this->right && $this->right->no == $no)) {
             return $this;
@@ -1062,6 +1062,7 @@ class TreeNode
         if ($this->right && $no > $this->no ) {
             return $this->right->searchParent($no);
         }
+        return null;
     }
 
     /**
@@ -1303,7 +1304,7 @@ class BinaryTree
      * @return TreeNode
      * @author: LiuShiFu
      */
-    public function searchParentNode($no):TreeNode
+    public function searchParentNode($no): ?TreeNode
     {
         if (!$this->root) {
             return null;
@@ -1311,6 +1312,26 @@ class BinaryTree
             //调用节点的方法处理
             return $this->root->searchParent($no);
         }
+    }
+
+    /**
+     * 二叉排序树方法
+     * 用于删除包含两个子节点的节点时，需要的内部方法
+     * 给定参数节点，删除它的最小值节点，并返回最小值
+     * @param TreeNode $node
+     * @return int
+     * @author: LiuShiFu
+     */
+    private function delRightTreeMin(TreeNode $node): int
+    {
+        //左子树是小值，循环到最左边的叶子节点即可
+        while ($node->left) {
+            $node = $node->left;
+        }
+        $minValue = $node->no;
+        //删除这个节点
+        $this->delNode($minValue);
+        return $minValue;
     }
 
     /**
@@ -1336,7 +1357,7 @@ class BinaryTree
         if (!$targetNode) {
             return false;
         }
-        //找到父节点
+        //找到父节点(页子节点，或者只有一个子节点的情况需要使用）
         $parentNode = $this->searchParentNode($no);
 
         //1 叶子节点的情况
@@ -1353,11 +1374,12 @@ class BinaryTree
                     return true;
                 }
             }
-            //有两个子节点的情况
+            //有两个子节点的情况（无需借助父节点）
         } elseif ($targetNode->left != null && $targetNode->right != null ) {
             printf("含有两个子节点的情况".PHP_EOL);
-            return false;
-
+            $minValue = $this->delRightTreeMin($targetNode->right);
+            $targetNode->no = $minValue;
+            return true;
         } else {
             //$targetNode只有一个子节点的情况，则把它的子节点上调一层
             printf("含有一个子节点的情况".PHP_EOL);
@@ -1383,12 +1405,8 @@ class BinaryTree
                     $parentNode->right = $targetNode->right;
                 }
             }
-
         }
-        return false;
-        //2 非叶子节点
     }
-
 
 }
 
@@ -1413,7 +1431,7 @@ foreach($arr as $item) {
 }
 //中序遍历[二叉排序树】，应该是递增的结果就对了
 $binTree->infixOrder();
-$ret = $binTree->delSortNode(1);
+$ret = $binTree->delSortNode(3);   // 3，7，10这样的情况
 printf("删除后".PHP_EOL);
 var_dump($ret);
 $binTree->infixOrder();
