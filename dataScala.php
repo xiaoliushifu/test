@@ -1345,7 +1345,7 @@ class BinaryTree
      * @return bool
      * @author: LiuShiFu
      */
-    public function delSortNode($no):bool
+    public function delSortNode($no): ?bool
     {
         //空树
         if (!$this->root) {
@@ -1353,7 +1353,7 @@ class BinaryTree
         }
         //先找到该节点
         $targetNode = $this->searchSortNode($no);
-        //没有该节点
+        //没有该节点,不能删除
         if (!$targetNode) {
             return false;
         }
@@ -1367,13 +1367,15 @@ class BinaryTree
                 //目标节点是父节点的右子节点
                 if ($parentNode->right && $parentNode->right->no == $no) {
                     $parentNode->right = null;
-                    return true;
                 } else {
                     //否则左子节点
                     $parentNode->left = null;
-                    return true;
                 }
+            } else {
+              //叶子节点，且父节点为空,那么该树只有一个节点，且一定是根节点，
+                $this->root = null;
             }
+            return true;
             //有两个子节点的情况（无需借助父节点）
         } elseif ($targetNode->left != null && $targetNode->right != null ) {
             printf("含有两个子节点的情况".PHP_EOL);
@@ -1405,6 +1407,7 @@ class BinaryTree
                     $parentNode->right = $targetNode->right;
                 }
             }
+            return true;
         }
     }
 
@@ -1432,6 +1435,13 @@ foreach($arr as $item) {
 //中序遍历[二叉排序树】，应该是递增的结果就对了
 $binTree->infixOrder();
 $ret = $binTree->delSortNode(3);   // 3，7，10这样的情况
+$ret = $binTree->delSortNode(7);   // 3，7，10这样的情况
+$ret = $binTree->delSortNode(10);   // 3，7，10这样的情况
+$ret = $binTree->delSortNode(2);   // 3，7，10这样的情况
+$ret = $binTree->delSortNode(5);   // 3，7，10这样的情况
+$ret = $binTree->delSortNode(9);   // 3，7，10这样的情况
+$ret = $binTree->delSortNode(1);   // 3，7，10这样的情况
+$ret = $binTree->delSortNode(12);   // 3，7，10这样的情况
 printf("删除后".PHP_EOL);
 var_dump($ret);
 $binTree->infixOrder();
