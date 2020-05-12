@@ -432,10 +432,57 @@ class SingleLinkedList
             $temp = $temp->next;
         }
     }
+
+    /**
+     * 假设单链表存储字符串，每个节点存储一个字符，那么
+     * 如何判断这个字符串是回文字符串呢？
+     * 回文就是对称，比如abccba;     abcba;
+     * 区分奇数和偶数
+     * 这里引用了快慢指针【这个用法才是学习的重点,用于快速找到中间结点】
+     * 代码只是找到中间结点就结束了。
+     * 如果真的找到回文，还需要再次对部分结点进行逆序操作才方便比较，
+     * 具体思路就是慢指针每次向中间移动前，加一步逆序操作，就是把当前结点移动到第一个结点。
+     * 也就是慢指针一边逆序一边移动；
+     * 这里就不写代码了。
+     * @author: LiuShiFu
+     */
+    public function isHuiWen()
+    {
+        //初始化，快慢指针都指向第一个节点
+        $first = $this->head->next;
+        $low = $fast = $first;
+        while(1) {
+            //快指针首先移动
+            $i=1;
+            while($i < 3) {
+                if ($fast->next) {
+                    $fast=$fast->next;
+                    $i++;
+                    continue;
+                }
+                break;
+            }
+            //根据$i判断，链表长度是奇数还是偶数
+            //如果是1，快指针走到终点，且链表为奇数个结点，此时$low指向中间结点；
+            //如果是2，快指针走到终点，且链表为偶数个结点，此时$low指向中间两个结点的上结点（比如4个结点，那么中间俩就是23，$low指向2结点）
+            if($i==1) {
+                //同样移动一次指针，指向后半部分第一个结点
+                $low=$low->next;
+                break;
+            } elseif($i==2) {
+                $low=$low->next;
+                break;
+            } else {
+                //移动一位
+                $low=$low->next;
+            }
+        }
+        //此时$low指向后半部分的第一个结点，$fast指向最后的结点
+    }
 }
 
 //=================================================== 链表的操作
-//$list = new SingleLinkedList();
+$list = new SingleLinkedList();
 //$h1 = new HeroNode(1,"松江");
 //$h2 = new HeroNode(2,"林冲");
 //$h3 = new HeroNode(3,"玉麒麟");
@@ -452,6 +499,13 @@ class SingleLinkedList
 //$list->del($h2);
 //$list->show();
 
+//测试回文字符串
+$testArr=['a','b','c','c','b','a'];
+foreach($testArr as $k=>$v) {
+    $h1 = new HeroNode($k,$v);
+    $list->add($h1);
+}
+$list->isHuiWen();
 
 /*==========================双向链表=================================================*/
 
@@ -1535,8 +1589,8 @@ class MonkeyKing {
     }
 }
 //===============测试约瑟夫环
-$monkey = new MonkeyKing(5);
-$monkey->circle();
-$monkey->show();
-echo PHP_EOL;
-$monkey->selectKing(2);
+//$monkey = new MonkeyKing(5);
+//$monkey->circle();
+//$monkey->show();
+//echo PHP_EOL;
+//$monkey->selectKing(2);
