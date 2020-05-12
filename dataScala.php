@@ -1428,20 +1428,115 @@ $binTree = new BinaryTree();
 //二叉排序树的操作
 //从一个数组表示的二叉树，创建为二叉排序树
 //线性存储转化为直观二叉树的方式
-$arr = [7,3,10,12,5,1,9,2];
-foreach($arr as $item) {
-    $binTree->addSearchNode(new TreeNode($item,"xxx"));
+//$arr = [7,3,10,12,5,1,9,2];
+//foreach($arr as $item) {
+//    $binTree->addSearchNode(new TreeNode($item,"xxx"));
+//}
+////中序遍历[二叉排序树】，应该是递增的结果就对了
+//$binTree->infixOrder();
+//$ret = $binTree->delSortNode(3);   // 3，7，10这样的情况
+//$ret = $binTree->delSortNode(7);   // 3，7，10这样的情况
+//$ret = $binTree->delSortNode(10);   // 3，7，10这样的情况
+//$ret = $binTree->delSortNode(2);   // 3，7，10这样的情况
+//$ret = $binTree->delSortNode(5);   // 3，7，10这样的情况
+//$ret = $binTree->delSortNode(9);   // 3，7，10这样的情况
+//$ret = $binTree->delSortNode(1);   // 3，7，10这样的情况
+//$ret = $binTree->delSortNode(12);   // 3，7，10这样的情况
+//printf("删除后".PHP_EOL);
+//var_dump($ret);
+//$binTree->infixOrder();
+
+
+#===============约瑟夫问题
+
+/**
+ * Class MonkeyKing
+ * 带有头结点的单链表
+ * 成为环：最末尾的节点指向第一个节点。
+ * 注意：头结点不在环内，仍然指向第一个节点。
+ */
+class MonkeyKing {
+    public $num;
+    public $head;
+
+    /**
+     * MonkeyKing constructor.
+     * @param int $num 猴子数量
+     */
+    public function __construct(int $num)
+    {
+        $this->num=$num;
+        $this->head = new HeroNode(0,'头');
+    }
+
+    /**
+     * 成为环形
+     * @author: LiuShiFu
+     */
+    public function circle()
+    {
+        $tmp = $this->head;
+        //构建单链表
+        for($i=1;$i<=$this->num;$i++) {
+            $m = new HeroNode($i,$i);
+            $tmp->next = $m;
+            $tmp = $tmp->next;
+        }
+        //下面这一行是重点，把末尾节点指向第一个节点，就构成了环
+        //头节点不参与环，是第一个节点$this->head->next被末尾节点$tmp指向
+        $tmp->next = $this->head->next;
+    }
+
+    /**
+     * 打印下环看看
+     * @author: LiuShiFu
+     */
+    public function show()
+    {
+        $i=0;
+        $tmp = $this->head;
+        while($tmp->next && ($i < $this->num+5)) {
+            echo "(".$tmp->next->no."|".$tmp->next->name."),";
+            $tmp=$tmp->next;
+            $i++;
+        }
+    }
+
+    /**
+     * 开始数号码，并出圈
+     * @param int $num
+     * @author: LiuShiFu
+     */
+    public function selectKing(int $num)
+    {
+        //初始化
+        //tmp指向第一个猴子节点
+        //$pre指向前一个节点，方便猴子出圈处理
+        $pre = $this->head;
+        $tmp = $pre->next;
+        while($this->num > 1) {
+            $i=1;
+            while($i<$num) {
+                //为了出圈方便，需要保留出圈猴子的前一个，就是$pre
+                $pre = $tmp;
+                $tmp = $tmp->next;
+                $i++;
+            }
+            //$tmp的下一个，交给前一个$pre
+            $pre->next = $tmp->next;
+            echo "出队：(".$tmp->no."|".$tmp->name.")".PHP_EOL;
+            //猴子数量减去1
+            $this->num--;
+            unset($tmp);
+            //$tmp指向下一个节点，继续下一轮数号码
+            $tmp=$pre->next;
+        }
+        echo "最后留队：(".$tmp->no."|".$tmp->name.")".PHP_EOL;
+    }
 }
-//中序遍历[二叉排序树】，应该是递增的结果就对了
-$binTree->infixOrder();
-$ret = $binTree->delSortNode(3);   // 3，7，10这样的情况
-$ret = $binTree->delSortNode(7);   // 3，7，10这样的情况
-$ret = $binTree->delSortNode(10);   // 3，7，10这样的情况
-$ret = $binTree->delSortNode(2);   // 3，7，10这样的情况
-$ret = $binTree->delSortNode(5);   // 3，7，10这样的情况
-$ret = $binTree->delSortNode(9);   // 3，7，10这样的情况
-$ret = $binTree->delSortNode(1);   // 3，7，10这样的情况
-$ret = $binTree->delSortNode(12);   // 3，7，10这样的情况
-printf("删除后".PHP_EOL);
-var_dump($ret);
-$binTree->infixOrder();
+//===============测试约瑟夫环
+$monkey = new MonkeyKing(5);
+$monkey->circle();
+$monkey->show();
+echo PHP_EOL;
+$monkey->selectKing(2);
