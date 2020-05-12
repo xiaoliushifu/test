@@ -468,16 +468,52 @@ class SingleLinkedList
             if($i==1) {
                 //同样移动一次指针，指向后半部分第一个结点
                 $low=$low->next;
+                //由于逆序操作，此时链表的第一个结点其实是原来中间结点,比如 abcba中间的c,此时变成cbaba,下面比较环节应该从第二个结点开始比较
+                $left = $this->head->next->next;
                 break;
             } elseif($i==2) {
                 $low=$low->next;
+                //偶数长度的单链表，从第一个结点开始比较
+                $left = $this->head->next;
                 break;
             } else {
                 //移动一位
-                $low=$low->next;
+//                $low=$low->next;
+                //逆序操作start，其中自带了向后移动一位
+                $this->moveFirst($low);
+                //逆序操作end
             }
         }
         //此时$low指向后半部分的第一个结点，$fast指向最后的结点
+        //$left指向左半边
+        //两个指针同时移动比较即可
+        while($low) {
+            if ($left->name == $low->name) {
+                $left=$left->next;
+                $low=$low->next;
+                continue;
+            }
+            //走到这里说明不是回文
+            echo "no!".PHP_EOL;
+            break;
+        }
+        echo "yes";
+    }
+
+    /**
+     * 把指定结点的下一个结点，移动到第一个结点
+     * 这就是逆序操作
+     * @param $low
+     * @author: LiuShiFu
+     */
+    private function moveFirst($low) {
+        $next = $low->next;
+        //第三个结点及以后
+        $low->next = $next->next;
+        //指向第一个结点
+        $next->next = $this->head->next;
+        //头结点指向它
+        $this->head->next = $next;
     }
 }
 
@@ -501,6 +537,8 @@ $list = new SingleLinkedList();
 
 //测试回文字符串
 $testArr=['a','b','c','c','b','a'];
+$testArr=['a','b','c','b','a'];
+$testArr=['a','b','e'];
 foreach($testArr as $k=>$v) {
     $h1 = new HeroNode($k,$v);
     $list->add($h1);
