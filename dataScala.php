@@ -502,7 +502,7 @@ class SingleLinkedList
 
     /**
      * 把指定结点的下一个结点，移动到第一个结点
-     * 这就是逆序操作
+     * 这就是逆序操作，是回文判断中的一个小环节
      * @param $low
      * @author: LiuShiFu
      */
@@ -514,6 +514,56 @@ class SingleLinkedList
         $next->next = $this->head->next;
         //头结点指向它
         $this->head->next = $next;
+    }
+
+    /**
+     * 判断单链表中是否有环出现
+     * 这个有环和是环要理解有这么几种情况
+     *  1： 1-》2-》3-》4-》2-》xxxxxx   1不在环内，从234开始这三个结点组成了环；
+     *  2： 1-》2-》3-》4-》1-》xxxxxx    1也在环内，1234整个链表组成了环
+     *  该方法就是判断上述两种情况的
+     *  思路1：
+     *      快慢两个指针，开始都指向第一个结点；
+     *      快指针一次走两步，慢指针一次走一步，这就算走了一回
+     *      当快指针赶上了慢指针（除了起点之外），说明一定有环（走得快的还能【追上】慢指针，说明快指针开始转圈了）
+     *      如果快指针走到最后（next=null)，没有追上慢指针，则说明无环；
+     *  思路2：
+     *      这个也简单，把遍历过的结点存到一个数据结构中，比如数组map标记为1，默认没出现就是0；
+     *      从头结点开始往后遍，判断map[p]的值；如果是1说明出现过，有环；如果是0，则标记为1；
+     *      直到遍历到链表末尾都没有出现1，则说明没有环
+     *      难点：php如何比较两个对象相等呢？？c语言可以通过指针地址判断，php该咋整呢？
+     * @author: LiuShiFu
+     */
+    public function hasLoop() {
+        //头结点必须有
+        $tmp = $this->head;
+
+        //第一个结点
+        $fast = $low = $first = $tmp->next;
+        //第一个结点不存在，肯定不是环
+        if ($first == null) {
+            return false;
+        }
+        while(1) {
+            //慢指针走一步
+            $low = $low->next;
+            if ($low == null) {
+                return false;
+            }
+            //快指针走两步
+            $fast = $fast->next;
+            //只有一个结点
+            if ($fast == null) {
+                return false;
+            }
+            //快指针再走一步
+            $fast = $fast->next;
+
+            //快慢指针各自走完自己的步数后称之为走一回，走一回后判断是否相等（快指针走向了慢指针）
+            if ($fast == $low) {
+                return true;
+            }
+        }
     }
 }
 
@@ -539,12 +589,31 @@ $list = new SingleLinkedList();
 $testArr=['a','b','c','c','b','a'];
 $testArr=['a','b','c','b','a'];
 $testArr=['a','b','e'];
-foreach($testArr as $k=>$v) {
-    $h1 = new HeroNode($k,$v);
-    $list->add($h1);
-}
-$list->isHuiWen();
+//foreach($testArr as $k=>$v) {
+//    $h1 = new HeroNode($k,$v);
+//    $list->add($h1);
+//}
+//$list->isHuiWen();
 
+//是否有环
+
+$h1 = new HeroNode(1,1);
+$h2 = new HeroNode(2,1);
+$h3 = new HeroNode(3,1);
+$h4 = new HeroNode(4,1);
+$list->add($h1);
+$list->add($h2);
+$list->add($h3);
+$list->add($h4);
+
+//$h4->next=$h2;
+$h4->next=$h3;
+$ret = $list->hasLoop();
+if ($ret) {
+    echo "有环";
+    return;
+}
+echo "无环";
 /*==========================双向链表=================================================*/
 
 
