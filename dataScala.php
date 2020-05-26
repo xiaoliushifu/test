@@ -583,7 +583,7 @@ class SingleLinkedList
      */
     public function reverseList()
     {
-        //第一个结点
+        //第一个结点，不是头结点！
         $p = $this->head->next;
 
         if (!$p) {
@@ -591,13 +591,25 @@ class SingleLinkedList
         }
 
         while($p->next != null) {
-            //1
+            //下面两行代码是删除$p的下一个结点，因为单链表要想删除某个结点，必须知道它的上一个结点，必须！
+                //1待删除结点存入临时变量$temp
             $temp = $p->next;
+
+                //2为了删除后不能断开链表，还得把$temp的前后两端结点接起来。
+
             $p->next = $temp->next;
-//        $temp;
-            //把temp插到链表头
+
+            //下面两行代码是把$temp结点，插到链表头部（第一个结点）
+            //因为要想插到链表头部，必须得有一个指针指向第一个结点，无论是头结点还是真正的第一个结点。
+            //否则无法头插！
+            //目前所有的链表都是带有头结点的，这是有原因的
+
+                //把第一个结点接到$temp的后面，$temp就成为了第一个结点的前驱，那么$temp就是第一个结点了
             $temp->next = $this->head->next;
+                //在把$temp交给头指针管理
             $this->head->next = $temp;
+
+            //上述完成后，$p自动向后移动了一位：因为它把$p的下一个结点转移到了左边而已。
         }
     }
 
@@ -763,15 +775,15 @@ $list->add($h4);
 $list->show();
 
 //测试头插法逆序
-//$list->reverseList();
-//echo "逆序后";
+$list->reverseList();
+echo "逆序后";
 //再打印
-//$list->show();
-
+$list->show();
+exit;
 
 #快慢指针
 //$list->fastAndSlow();
-$list->fastAndSlowV2();
+//$list->fastAndSlowV2();
 //再打印
 //$list->show();
 exit;
