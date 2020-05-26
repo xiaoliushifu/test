@@ -510,7 +510,7 @@ class SingleLinkedList
         $next = $low->next;
         //第三个结点及以后
         $low->next = $next->next;
-        //指向第一个结点
+        //指向第一个结点，借助头指针
         $next->next = $this->head->next;
         //头结点指向它
         $this->head->next = $next;
@@ -565,6 +565,144 @@ class SingleLinkedList
             }
         }
     }
+
+    /**
+     * 头插法逆序一个单链表
+     *
+     * 1头插法，
+     *      $node = new Node();
+     *
+     *      $node->next = head->next;
+     *      head->next = $node;
+     * 2删除结点
+     *      $temp = p->next;
+     *      $p->next = $temp->next;
+     *      $temp=null
+     * 所以，所谓头插法逆序一个单链表其实就是先删除一个结点，然后把这个结点头插到链表前端；就是【删除结点】+【头插法】结合
+     * @author: LiuShiFu
+     */
+    public function reverseList()
+    {
+        //第一个结点
+        $p = $this->head->next;
+
+        if (!$p) {
+            return ;
+        }
+
+        while($p->next != null) {
+            //1
+            $temp = $p->next;
+            $p->next = $temp->next;
+//        $temp;
+            //把temp插到链表头
+            $temp->next = $this->head->next;
+            $this->head->next = $temp;
+        }
+    }
+
+    /**
+     * 快慢指针
+     * 兼容1个结点，2个结点
+     * 3个结点
+     * 奇数和偶数的情况要考虑
+     * @author: LiuShiFu
+     */
+    public function fastAndSlow()
+    {
+        $p = $this->head->next;
+        if (!$p) {
+            return;
+        }
+        //初始化，快慢指针都指向第一个结点（不是头结点）
+        $fast = $slow = $p;
+
+
+        while ($fast->next != null) {
+            //fast后两个结点都有，就可以大张旗鼓向后移动
+            if ($fast->next->next != null) {
+                $slow = $slow->next;
+                $fast = $fast->next->next;
+            } else {
+                //当快指针不够移两步时，只有偶数才符合这里的情况，奇数个根本不会走到这
+                //偶数个，快指针还得移动一次，慢指针此时指向中间两结点的靠左结点
+//                $slow = $slow;
+                $fast = $fast->next;
+            }
+        }
+        echo "slow:".$slow->no.PHP_EOL;
+        echo "fast:".$fast->no.PHP_EOL;
+    }
+
+    /**
+     * 快慢指针
+     * 第二种方法，感觉比上一个方法简单点，没有那么多if else
+     * @author: LiuShiFu
+     */
+    public function fastAndSlowV2()
+    {
+        //从第一个结点遍历,如何看待第一个结点：
+        //如果是头指针，直接head;
+        //否则就是head->next;
+        $p = $this->head->next;
+        if (!$p) {
+            return;
+        }
+        //初始化，快慢指针都指向第一个结点
+        $fast = $slow = $p;
+
+        while ($fast->next && $fast->next->next) {
+                $slow = $slow->next;
+                $fast = $fast->next->next;
+        }
+        //当偶数个结点时，快指针还需要多走一步才到最后结点
+        if($fast->next) {
+            $fast = $fast->next;
+        }
+        echo "slow:".$slow->no.PHP_EOL;
+        echo "fast:".$fast->no.PHP_EOL;
+    }
+
+    /**
+     * 用快慢指针做回文判断
+     * 额外使用一个栈数据结构，并不是在原来链表基础上操作。
+     * 练习php的spl库，SPLStack
+     * 快慢指针就为了找到链表的中点而已，其后快指针就无用了
+     * @author: LiuShiFu
+     */
+    public function isHuiWenV2()
+    {
+        $p = $this->head->next;
+        if (!$p) {
+            return;
+        }
+        //初始化栈结构
+        $stack = new SplStack();
+        //初始化，快慢指针都指向第一个结点
+        $fast = $slow = $p;
+        //第一个结点入栈
+        $stack->push($slow->name);
+
+        while ($fast->next && $fast->next->next) {
+            $slow = $slow->next;
+            //慢指针走过结点的值都入栈
+            $stack->push($slow->name);
+            $fast = $fast->next->next;
+        }
+        //如果是奇数个结点时，此时慢指针指向绝对中间结点，该值无需入栈
+        if(!$fast->next) {
+            $stack->pop();
+        }
+        //走链表的后半段，并和栈中数据比对即可,快指针已经没有用了
+        while($slow->next) {
+            $slow = $slow->next;
+            $top = $stack->pop();
+            if ($top != $slow->name) {
+                exit("no\n");
+            }
+        }
+        exit("yes\n");
+    }
 }
 
 //=================================================== 链表的操作
@@ -586,34 +724,57 @@ $list = new SingleLinkedList();
 //$list->show();
 
 //测试回文字符串
-$testArr=['a','b','c','c','b','a'];
-$testArr=['a','b','c','b','a'];
-$testArr=['a','b','e'];
+//$testArr=['a','b','c','c','b','a'];
+//$testArr=['a','b','c','b','a'];
+//$testArr=['a','a'];
 //foreach($testArr as $k=>$v) {
 //    $h1 = new HeroNode($k,$v);
 //    $list->add($h1);
 //}
 //$list->isHuiWen();
+//$list->isHuiWenV2();
+
 
 //是否有环
-
 $h1 = new HeroNode(1,1);
 $h2 = new HeroNode(2,1);
 $h3 = new HeroNode(3,1);
 $h4 = new HeroNode(4,1);
+$h5 = new HeroNode(5,1);
+$h6 = new HeroNode(6,1);
 $list->add($h1);
 $list->add($h2);
 $list->add($h3);
 $list->add($h4);
+//$list->add($h5);
+//$list->add($h6);
+//$list->add($h6);
 
 //$h4->next=$h2;
-$h4->next=$h3;
-$ret = $list->hasLoop();
-if ($ret) {
-    echo "有环";
-    return;
-}
-echo "无环";
+//$h4->next=$h3;
+//$ret = $list->hasLoop();
+//if ($ret) {
+//    echo "有环";
+//    return;
+//}
+//echo "无环";
+
+//先打印
+$list->show();
+
+//测试头插法逆序
+//$list->reverseList();
+//echo "逆序后";
+//再打印
+//$list->show();
+
+
+#快慢指针
+//$list->fastAndSlow();
+$list->fastAndSlowV2();
+//再打印
+//$list->show();
+exit;
 /*==========================双向链表=================================================*/
 
 
