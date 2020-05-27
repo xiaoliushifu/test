@@ -419,7 +419,6 @@ class SingleLinkedList
      */
     public function show()
     {
-
         if ($this->isEmpty()) {
             echo "链表为空：" . PHP_EOL;
             return;
@@ -614,6 +613,41 @@ class SingleLinkedList
     }
 
     /**
+     * 逆序一个链表的方法，
+     * 需要用到三个指针，觉得比较简单就搬过来了在leetcode上看的
+     * 整体思路是：不移动结点，而是移动指向结点的指针方向：把指向后继的指针指向前驱。
+     *                  核心代码就这一行：
+     *                              q->next = p
+     * 无需借助头结点
+     * @author: LiuShiFu
+     */
+    public function reverseV2()
+    {
+        //$p,$q,$r  分别指向第一，第二，第三个结点的指针（兼容头结点的情况）
+        $p=$this->head;
+        $q=$p->next;
+//        $r=$q->next;
+
+        //第一个结点断开
+        $p->next = null;
+
+        //通过书本上演算，最终q为空，则走到了头
+        while($q) {
+            //q后一个结点存起来
+            $r = $q->next;
+            //$q指针方向调整，指向左边刚刚断开的$p
+            $q->next = $p;
+
+            //p,q指针整体后移一个结点
+            $p = $q;
+            $q = $r;
+        }
+        //此时p指向最终结点，且指针已经反向完成
+        //如果头结点不参与的话，那就是$this->head->next=$p;
+        $this->head = $p;
+    }
+
+    /**
      * 快慢指针
      * 兼容1个结点，2个结点
      * 3个结点
@@ -715,6 +749,102 @@ class SingleLinkedList
         }
         exit("yes\n");
     }
+
+    /**
+     * 调整单链表的结点顺序
+     * 用到了三个小模块
+     *  1快慢指针找中点
+     *  2针对一半部分的链表逆序操作（无需借用头指针的方法，切换指针方向）
+     *  3两个半链表合并（两种方法）
+     * @author: LiuShiFu
+     */
+    // 1-2-3-4-5===> 1-5-2-4-3
+    public function recordList()
+    {
+        //少于两个指针的，就算了
+        if (!$this->head || !$this->head->next || !$this->head->next->next) {
+            return;
+        }
+        //1快慢指针找点
+        $slow = $fast = $this->head->next;
+
+        while($fast->next && $fast->next->next) {
+            $slow=$slow->next;
+            $fast=$fast->next->next;
+        }
+        //slow确定到了中点，无论链表是奇数还是偶数个
+
+        //下面对链表的右半部分进行逆序
+        $right = $slow->next;
+        $slow->next = null;
+
+        $p = $right;
+        $q = $p->next;
+        //右半部分第一个结点断开
+        $p->next=null;
+        while($q) {
+            $r = $q->next;
+            $q->next = $p;
+
+            $p = $q;
+            $q = $r;
+        }
+
+        //后半部分链表已经倒序，且p为第一个结点了
+
+        //已经拆分为两个部分了，接下来就是组合，组合的方式有很多
+
+        //方法1：依次从两个链表各摘取一个头结点，尾插法到一个新的链表$last中
+        /**
+            //初始化一个新链表
+            $last = new SingleLinkedList();
+            //fast是临时指针，新链表的头指针
+            $fast = $last->head;
+
+        while($this->head->next && $p) {
+
+            //左边摘一个
+            $fromLeft = $this->head->next;
+            $this->head->next = $fromLeft->next;
+
+            //放到新链表中
+            $fast->next = $fromLeft;
+            $fast = $fast->next;
+
+
+            //右边摘一个
+            $fromRight = $p;
+            $p = $p->next;
+
+            //放到新链表中
+            $fast->next = $fromRight;
+            $fast = $fast->next;
+        }
+        //左半部分有可能多一个
+        if ($this->head->next) {
+            $fast->next = $this->head->next;
+        }
+
+        //最终放到原链表中
+        $this->head->next = $last->head->next;
+         * */
+//        return $last;
+
+
+        //方法2：把其中一个链表合并到另一个链表中
+        $left = $this->head->next;
+        while($left && $p) {
+            //右边摘取一个
+            $rightOne = $p;
+            $p = $p->next;
+
+            //放到左边
+            $rightOne->next = $left->next;
+            $left->next = $rightOne;
+            //$left右移
+            $left = $rightOne->next;
+        }
+    }
 }
 
 //=================================================== 链表的操作
@@ -755,9 +885,9 @@ $h4 = new HeroNode(4,1);
 $h5 = new HeroNode(5,1);
 $h6 = new HeroNode(6,1);
 $list->add($h1);
-$list->add($h2);
-$list->add($h3);
-$list->add($h4);
+//$list->add($h2);
+//$list->add($h3);
+//$list->add($h4);
 //$list->add($h5);
 //$list->add($h6);
 //$list->add($h6);
@@ -775,8 +905,13 @@ $list->add($h4);
 $list->show();
 
 //测试头插法逆序
-$list->reverseList();
-echo "逆序后";
+//$list->reverseList();
+//逆序方法2
+//$list->reverseV2();
+//echo "逆序后";
+
+//综合操作（快慢指针，逆序，合并）
+$list->recordList();
 //再打印
 $list->show();
 exit;
