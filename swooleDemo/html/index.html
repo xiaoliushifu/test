@@ -1,10 +1,27 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
+<html>
 <body>
-测试下呗
+<p>the data is<span id="data">0</span></p>
+<h3><button onclick="Req(0)">click 0!</button></h3>
+<h3><button onclick="Req(1)">click 1!</button></h3>
+<h3><button onclick="Req()">click ++!</button></h3>
 </body>
+<script>
+    var index=0;
+    var dataObj = document.getElementById("data");
+    function Req(param) {
+        //每次清空
+        dataObj.innerText="";
+        var a = new XMLHttpRequest();
+        a.open('get','http://cache.test.me/data');
+        a.setRequestHeader("Content-type","text/plain");
+        if (param) {
+            a.setRequestHeader("X-test-cache",param);
+        }else{
+            a.setRequestHeader("X-test-cache",index++);
+        }
+        a.send();
+        dataObj.innerText=index;
+    }
+</script>
 </html>

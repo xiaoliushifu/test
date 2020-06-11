@@ -14,9 +14,27 @@ $serv->set(array(
 
 //http服务器特有的事件
 $serv->on('Request', function ($req, $res){
-    print_r($req);
-    print_r($req->get);
-    $res->end("<h1>Hello Swoole. #".rand(1000, 9999)."</h1>");
+    printf("request come\n");
+    printf("%s\n",$req->server['request_uri']);
+
+    if ($req->server['request_uri'] === '/') {
+        $res->header('Content-Type', 'text/html');
+
+//        $res->header('Cache-control', 'no-cache');
+//        $res->header('Etag', 'xxxxxu');
+//        $res->header('Cache-control', 'private');
+        $res->sendfile("./html/index.html");
+    }
+
+    //配合nginx代理，测试http缓存
+    if ($req->server['request_uri'] === '/data') {
+        $res->header('Content-Type', 'text/plain');
+        $res->header('Cache-control', 'max-age=10,s-maxage=20');
+        $res->header('Vary', 'X-test-cache');
+        $res->end("i am a data hello world");
+    }
+
+//    $res->end("<h2>Hello Swoole. ".rand(1000, 9999)."</h2>");
 });
 
 //最终启动服务
