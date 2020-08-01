@@ -550,12 +550,13 @@ class SingleLinkedList
                 return false;
             }
             //快指针走两步
+                //1快指针先走一步
             $fast = $fast->next;
             //只有一个结点
             if ($fast == null) {
                 return false;
             }
-            //快指针再走一步
+                //2快指针再走一步
             $fast = $fast->next;
 
             //快慢指针各自走完自己的步数后称之为走一回，走一回后判断是否相等（快指针走向了慢指针）
@@ -878,13 +879,13 @@ $list = new SingleLinkedList();
 
 
 //是否有环
-$h1 = new HeroNode(1,1);
-$h2 = new HeroNode(2,1);
-$h3 = new HeroNode(3,1);
-$h4 = new HeroNode(4,1);
-$h5 = new HeroNode(5,1);
-$h6 = new HeroNode(6,1);
-$list->add($h1);
+//$h1 = new HeroNode(1,1);
+//$h2 = new HeroNode(2,1);
+//$h3 = new HeroNode(3,1);
+//$h4 = new HeroNode(4,1);
+//$h5 = new HeroNode(5,1);
+//$h6 = new HeroNode(6,1);
+//$list->add($h1);
 //$list->add($h2);
 //$list->add($h3);
 //$list->add($h4);
@@ -902,7 +903,7 @@ $list->add($h1);
 //echo "无环";
 
 //先打印
-$list->show();
+//$list->show();
 
 //测试头插法逆序
 //$list->reverseList();
@@ -911,17 +912,15 @@ $list->show();
 //echo "逆序后";
 
 //综合操作（快慢指针，逆序，合并）
-$list->recordList();
+//$list->recordList();
 //再打印
-$list->show();
-exit;
+//$list->show();
 
 #快慢指针
 //$list->fastAndSlow();
 //$list->fastAndSlowV2();
 //再打印
 //$list->show();
-exit;
 /*==========================双向链表=================================================*/
 
 
@@ -1453,6 +1452,46 @@ class TreeNode
     }
 
     /**
+     * 层序遍历，类似于广度优先搜索
+     * 需要借用队列数据结构，再加两层循环
+     * @author: LiuShiFu
+     */
+    public function levelOrder() {
+        //需要一个队列
+        $que = new SplQueue();
+        //当前节点入队列
+        $que->enqueue($this);
+
+        while(!$que->isEmpty()) {
+            $s = 0;
+            //当前层的数量
+            //这个队列长度是动态的，后续会往队列中增加属于下一层的节点，这里就是提前获取到当前层的数量，使得接下来的队列遍历可以控制只访问到当前层的大小）
+            //不会越界访问到属于下一层的节点
+            $len = $que->count();
+            $stack2 = new SplQueue();
+            //这个循环注意是有$len上限的，这就使得本次while只循环指定数量的节点，这些节点都属于同层，一次遍历不会跨层；
+            //而在某层遍历的同时，又会往队列中增加不属于当前层的节点（确切的说就是下一层节点），从队列角度来看，某时刻它存储
+            //着属于不同层的节点（也就是跨层的节点）
+            while($s++<$len) {
+                //出队列，就是遍历它
+                $t = $que->dequeue();
+                //$stack2->push($t);
+                printf("no=%s,name=%s\t".PHP_EOL, $t->no, $t->name);
+                //当前节点的孩子节点（就是它的下一层节点）入队列，这些孩子节点之间属于兄弟关系，按照从左往右顺序放入到队列中
+                //所以要强调的注意点就是：本次while循环中往队列que中添加的节点都是属于同层的节点
+                //每个兄弟关系的节点的孩子节点都加入队列，就构成了整个下一层的节点。
+                //在遍历第1层的节点时，会同时把第二层的节点加入队列中，方便第一层遍历完毕时能够继续遍历第二层，完成衔接
+                //遍历第n层的同时，会准备第n+1层的节点加入队列（且只添加n+1层的节点），使得后续循环可以按照层级铺展开来，
+                //当前层遍历完毕时，队列中就只剩下n+1层的节点，重新读取队列长度，照着这个数量遍历即可，重复该步骤
+
+                if($t->left) $que->enqueue($t->left);
+                if($t->right) $que->enqueue($t->right);
+            }
+        }
+
+    }
+
+    /**
      * 前序查找
      * 先比较中间节点，再比较左子树，比较右子树
      * @param int $no
@@ -1477,6 +1516,8 @@ class TreeNode
             return $return;
         }
     }
+
+
 
     /**
      * 二叉排序树方法
@@ -1643,6 +1684,8 @@ class BinaryTree
         $node3 = new TreeNode(3, "卢俊义");
         $node4 = new TreeNode(4, "林冲");
         $node5 = new TreeNode(5, "关胜");
+        $node6 = new TreeNode(6, "武松");
+        $node7 = new TreeNode(7, "鲁达");
 
         //节点之间建立关系
         $tmp->left = $node2;
@@ -1650,6 +1693,9 @@ class BinaryTree
 
         $node3->left = $node5;
         $node3->right = $node4;
+
+//        $node2->left=$node6;
+        $node2->right=$node7;
     }
 
 
@@ -1687,6 +1733,19 @@ class BinaryTree
     {
         if ($this->root) {
             $this->root->postOrder();
+        } else {
+            printf("空二叉树，不能遍历");
+        }
+    }
+
+    /**
+     * 二叉树的层序遍历
+     * @author: LiuShiFu
+     */
+    public function levelOrder()
+    {
+        if ($this->root) {
+            $this->root->levelOrder();
         } else {
             printf("空二叉树，不能遍历");
         }
@@ -1884,10 +1943,12 @@ class BinaryTree
 
 //======================二叉树的遍历操作
 $binTree = new BinaryTree();
-//$binTree->createSimpleTree();
-////$binTree->preOrder();     //前序，就是中左右的顺序遍历节点
-////$binTree->infixOrder();   //中序，就是左中右的顺序遍历
+$binTree->createSimpleTree();
+//$binTree->preOrder();     //前序，就是中左右的顺序遍历节点
+//$binTree->infixOrder();   //中序，就是左中右的顺序遍历
 ////$binTree->postOrder();      //后序，就是左右中的顺序遍历
+$binTree->levelOrder();      //层序，就是层1，层2为单位，一层一层的顺序遍历
+exit;
 //
 ////$binTree->preOrderSearch(5);    //前序查找
 //$binTree->delNode(1);    //删除节点
