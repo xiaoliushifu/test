@@ -1492,6 +1492,31 @@ class TreeNode
     }
 
     /**
+     * 层序遍历2
+     * 与上面相比，同样使用队列，但是使用一层循环
+     * 简洁
+     * 从这里可以看出，队列的先进先出特性，我们的程序只要按照层级的顺序往队列中添加节点就行，
+     * 把访问节点和往队列添加节点交叉执行（一段代码逻辑是【访问一个节点】和【把当前节点的字节点入队列】交叉执行的）
+     * 而不是纯【访问所有节点】之后，再纯【添加所有节点】
+     * @author: LiuShiFu
+     */
+    public function levelOrder2() {
+        //需要一个队列
+        $que = new SplQueue();
+        //当前节点入队列
+        $que->enqueue($this);
+
+        while(!$que->isEmpty()) {
+            $t = $que->dequeue();
+            printf("no=%s,name=%s\t".PHP_EOL, $t->no, $t->name);
+
+            if($t->left) $que->enqueue($t->left);
+            if($t->right) $que->enqueue($t->right);
+        }
+
+    }
+
+    /**
      * 前序查找
      * 先比较中间节点，再比较左子树，比较右子树
      * @param int $no
@@ -1695,7 +1720,7 @@ class BinaryTree
         $node3->right = $node4;
 
 //        $node2->left=$node6;
-        $node2->right=$node7;
+//        $node2->right=$node7;
     }
 
 
@@ -1745,7 +1770,7 @@ class BinaryTree
     public function levelOrder()
     {
         if ($this->root) {
-            $this->root->levelOrder();
+            $this->root->levelOrder2();
         } else {
             printf("空二叉树，不能遍历");
         }
@@ -1947,8 +1972,7 @@ $binTree->createSimpleTree();
 //$binTree->preOrder();     //前序，就是中左右的顺序遍历节点
 //$binTree->infixOrder();   //中序，就是左中右的顺序遍历
 ////$binTree->postOrder();      //后序，就是左右中的顺序遍历
-$binTree->levelOrder();      //层序，就是层1，层2为单位，一层一层的顺序遍历
-exit;
+//$binTree->levelOrder();      //层序，就是层1，层2为单位，一层一层的顺序遍历
 //
 ////$binTree->preOrderSearch(5);    //前序查找
 //$binTree->delNode(1);    //删除节点
@@ -2070,3 +2094,140 @@ class MonkeyKing {
 //$monkey->show();
 //echo PHP_EOL;
 //$monkey->selectKing(2);
+
+
+//==========================================图的数据结构
+
+/**
+ * 图的存储结构有好几种（邻接矩阵，邻接链表，xxx）这里选择邻接链表；
+ * 邻接链表需要一个【顶点数组】+ 【链表】
+ *
+ *   邻接链表：（四个顶点，4条边）
+ *
+ * 1[1]===>(3)====>(2)=====>(4)
+ * 2[2]===>(1)
+ * 3[3]===>(1)====>(4)
+ * 4[4]===>(1)====>(3)
+ *
+ *  示例图：
+ *             【1】
+ *              = =
+ *             =  =  =
+ *            =   =   =
+ *          【2】  =  【3】
+ *                =  =
+ *                = =
+ *                =
+ *             【4】
+ *
+ */
+
+//临接链表结点，构成边的结点
+class arcNode{
+
+    public $idx; //顶点的下标
+    public $next=null; //下一个边的指针
+
+    public function __construct($idx)
+    {
+        $this->idx = $idx;
+    }
+}
+
+
+//顶点
+class vNode{
+
+    public $num;    //顶点信息
+    public $firstArc=null;       //指向第一个边arcNode的顶点指针
+
+    public function __construct(int $num)
+    {
+        $this->num = $num;
+    }
+}
+
+//图（就是顶点数组）
+class graph{
+    public $count;  //结点数量
+    public $nodeList=[];   //顶点vNode的数组
+
+    /**
+     * 构造方法，构造图
+     * graph constructor.
+     * @param int $count 顶点数
+     */
+    public function __construct(int $count=8){
+
+        $this->count = $count;
+        //先构造顶点数组
+        foreach(range(1,$count) as $v) {
+            $this->nodeList[$v] = new vNode($v);
+        }
+
+        //每个顶点伸出的边(v1,v2)
+        //[1,4]表示顶点1到顶点4有边（无向边）
+        foreach([[1,4],[1,3],[1,2],[2,5],[3,7],[4,6],[6,8]] as $item) {
+
+            //构建边的一端arcNode，右端；
+            $arcNodeRight = new arcNode($item[1]);
+            //该顶点原有的链表，放到新结点的后面，（也就是用头插法为某顶点增加边）
+            $arcNodeRight->next = $this->nodeList[$item[0]]->firstArc;
+            $this->nodeList[$item[0]]->firstArc = $arcNodeRight;
+
+            //边的另一端，左端；
+            $arcNodeLeft = new arcNode($item[0]);
+            //该顶点原有的链表，放到新结点的后面，（也就是用头插法为某顶点增加边）
+            $arcNodeLeft->next = $this->nodeList[$item[1]]->firstArc;
+            $this->nodeList[$item[1]]->firstArc = $arcNodeLeft;
+
+        }
+    }
+
+    /**
+     * 广度优先算法
+     * @author: LiuShiFu
+     */
+    public function bfs() {
+        //初始化标记某顶点是否被访问的数组，0未访问，1访问过
+        $visit=array_fill(1,20,0);
+
+        //队列初始化
+        $queue = new SplQueue();
+
+        //初始选择一个顶点开始遍历，比如1；
+        //注意，初始顶点选择不同，遍历顺序当然会有不同
+        $node = $this->nodeList[8];
+        //第一个顶点（的下标）入队列
+        $queue->enqueue($node->num);
+        //输出并标记访问过
+        printf("node:%d".PHP_EOL,$node->num);
+        $visit[$node->num] = 1;
+
+        //队列存储的是顶点下标
+        while($queue->count()) {
+
+            $nodeNum = $queue->dequeue();
+            //尝试获取顶点的边（单链表不为空，说明有以顶点$nodeNum为出度的边）
+            $arcNode = $this->nodeList[$nodeNum]->firstArc;
+
+            //链表不结束就一直遍历
+            while($arcNode) {
+                //没有被访问过
+                if(!$visit[$arcNode->idx]) {
+                    //输出
+                    printf("node:%s".PHP_EOL,$arcNode->idx);
+                    $visit[$arcNode->idx]=1;//标记访问
+                    //$nodeNum的所有邻接点都入队
+                    $queue->enqueue($arcNode->idx);
+                }
+                //链表下一个结点，也就是$nodeNum的下一个邻接点；
+                $arcNode = $arcNode->next;
+            }
+        }
+    }
+}
+//====================测试
+$g = new graph();
+$g->bfs();
+
