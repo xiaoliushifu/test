@@ -2,6 +2,93 @@
 
 
 /**
+ * 输出字符串的子串，子串是有顺序的，比如
+ * abcd这个总共有如下10个子串
+ * a ab abc abcd
+ * b bc bcd
+ * c cd
+ * d
+ * 思路就是上述所写的，以第一个字符为基准，依次输出1个字符，2个字符，xxxn个字符，直到最后，
+ * 下一个就是以第二个字符为基准开始，依次输出一个字符，两个字符，xxxx直到最后
+ * @param string $str
+ * @return array
+ * @author: LiuShiFu
+ */
+function str($str="") {
+
+    $len = strlen($str);
+
+    //外层循环决定字符的起始，0，1开始
+    for($j=0;$j<$len;$j++) {
+        //内层循环决定输出的长度，在起始位固定的前提下，输出的长度依次增加，先输出1个，再输出连续的2个字符，xxx
+        for($i = 1;$i<=$len-$j;$i++) {
+            echo substr($str,$j,$i).PHP_EOL;
+        }
+    }
+}
+
+/**
+ * 来自网上，给定一个只含0和1的字符串，计算只包含01且同一个数字连续，且连续数量相同的这样的子串的数量
+ * 比如 00110011 输出6，
+ * 解释： 满足上述条件的子串有  0011，01，1100，10，0011，01
+ * 0011是只包含01的，且00和11都相同连续2个；
+ * 01是只包含01的，他们连续数量都相同，是1。
+ *
+ * 思路：从左到右依次统计连续数字出现的次数，比如 s=00111011,可以得到这样一个数组
+ * count=[2,3,1,2];
+ * 我们不清楚连续的数字具体是0还是1，但是相邻的两个数量肯定不是相同数字，上面的2，3可以理解为2个1，3个0或者2个0，3个1；
+ * 我们需要计算下min={2,3},就会知道00111可以组成的数量，0011，01；也就是2个；
+ * 依次对数组中相邻的数字做min计算并求和，就是最终的数量；
+ * 我想说的是，第一步，如何统计一个连续的数字次数，是一个基本操作；
+ * @param $s
+ * @author: LiuShiFu
+ */
+function strZeroOneCount($s){
+    //先统计连续数字的数量,到一个数组中；
+    $len = strlen($s);
+    $count = [];
+    $i = $curNum = $sum = 0;
+    while($i < $len) {
+        $char = $s[$i];//保留当前字符
+        while($i < $len && $s[$i] == $char) {
+            $curNum++;
+            $i++;
+        }
+        //数量统计上
+        $count[]=$curNum;
+        $curNum=0;//重新归零
+    }
+    //下面计算数组中相邻数字的min求和；
+    $countNum = count($count);
+    for($i=1;$i<$countNum;$i++) {
+        $sum += min($count[$i],$count[$i-1]);
+    }
+    return $sum;
+
+}
+
+
+/**
+ * 数学概念的数列，第三个数是前两个的和，所谓斐波那契数列
+ * 用PHP程序实现
+ * 非递归方式，其实就是按照数学公式计算好
+ * @param $n
+ * @author: LiuShiFu
+ */
+function mathList($n)
+{
+    $result=[];
+    foreach(range(1,$n) as $item) {
+        if ($item < 3)  {
+            $result[$item]=1;
+        } else {
+            $result[$item]=$result[$item-1]+$result[$item-2];
+        }
+    }
+    return $result[$item];
+}
+
+/**
  * 二保本
  * @param int $p1
  * @param int $p2
